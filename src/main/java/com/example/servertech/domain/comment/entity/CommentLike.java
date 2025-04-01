@@ -1,6 +1,5 @@
 package com.example.servertech.domain.comment.entity;
 
-import com.example.servertech.domain.post.entity.Post;
 import com.example.servertech.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
