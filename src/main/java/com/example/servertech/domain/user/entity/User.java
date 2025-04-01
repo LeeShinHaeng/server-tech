@@ -3,6 +3,8 @@ package com.example.servertech.domain.user.entity;
 import com.example.servertech.domain.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -38,6 +41,7 @@ public class User extends BaseTimeEntity {
 	private String password;
 
 	@Column(nullable = false)
+	@Enumerated(value = STRING)
 	private UserRole role;
 
 	public static User createNormal(String name, String email, String password) {
