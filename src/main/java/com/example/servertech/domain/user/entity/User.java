@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;

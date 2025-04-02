@@ -1,7 +1,6 @@
 package com.example.servertech.domain.user.repository;
 
 import com.example.servertech.domain.user.entity.User;
-import jakarta.validation.constraints.Pattern;
 
 import java.util.Optional;
 

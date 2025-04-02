@@ -1,7 +1,7 @@
 package com.example.servertech.domain.user.application;
 
+import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.domain.user.entity.User;
-import com.example.servertech.domain.user.entity.UserRole;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
@@ -56,6 +56,9 @@ public class UserService {
 			throw new RuntimeException("로그인이 확인되지 않습니다");
 		}
 
-		return (User) authentication.getPrincipal();
+		String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+		return userRepository.findById(Long.parseLong(username))
+			.orElseThrow(() -> new RuntimeException("로그인이 확인되지 않습니다"));
 	}
 }
