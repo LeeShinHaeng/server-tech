@@ -23,10 +23,15 @@ public interface UserController {
 	@ApiResponse(responseCode = "200")
 	ResponseEntity<TokenResponse> login(UserLoginRequest request);
 
-
 	@Operation(summary = "정보 수정 API", description = """
 			- Description : 이 API는 회원 정보를 수정합니다.
 		""")
 	@ApiResponse(responseCode = "204")
 	ResponseEntity<Void> update(UserCreateRequest request);
+
+	@Operation(summary = "탈퇴 API", description = """
+			- Description : 이 API는 회원 탈퇴합니다.
+		""")
+	@ApiResponse(responseCode = "204")
+	ResponseEntity<Void> delete();
 }

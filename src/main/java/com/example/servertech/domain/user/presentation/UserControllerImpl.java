@@ -40,4 +40,10 @@ public class UserControllerImpl implements UserController {
 		userService.update(request);
 		return ResponseEntity.noContent().build();
 	}
+
+	@Override
+	public ResponseEntity<Void> delete() {
+		userService.delete();
+		return ResponseEntity.noContent().build();
+	}
 }

@@ -47,6 +47,12 @@ public class UserService {
 		me.updateName(request.name());
 	}
 
+	@Transactional
+	public void delete() {
+		User me = me();
+		me.delete();
+	}
+
 	private User me() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
