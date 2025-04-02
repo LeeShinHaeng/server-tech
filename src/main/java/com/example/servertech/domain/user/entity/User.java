@@ -80,7 +80,7 @@ public class User extends BaseTimeEntity implements UserDetails {
 	}
 
 	public boolean isPasswordMatch(String password, PasswordEncoder passwordEncoder) {
-		return passwordEncoder.matches(password, password);
+		return passwordEncoder.matches(password, this.password);
 	}
 
 	@Override
