@@ -4,10 +4,12 @@ import com.example.servertech.domain.user.application.UserService;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
+import com.example.servertech.domain.user.presentation.response.UserDetailResponse;
 import com.example.servertech.domain.user.presentation.response.UserPersistResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,5 +49,12 @@ public class UserControllerImpl implements UserController {
 	public ResponseEntity<Void> delete() {
 		userService.delete();
 		return ResponseEntity.noContent().build();
+	}
+
+	@Override
+	@GetMapping("/me")
+	public ResponseEntity<UserDetailResponse> me() {
+		UserDetailResponse response = userService.mypage();
+		return ResponseEntity.ok(response);
 	}
 }

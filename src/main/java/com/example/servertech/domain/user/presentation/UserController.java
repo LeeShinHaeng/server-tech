@@ -3,6 +3,7 @@ package com.example.servertech.domain.user.presentation;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
+import com.example.servertech.domain.user.presentation.response.UserDetailResponse;
 import com.example.servertech.domain.user.presentation.response.UserPersistResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,4 +35,10 @@ public interface UserController {
 		""")
 	@ApiResponse(responseCode = "204")
 	ResponseEntity<Void> delete();
+
+	@Operation(summary = "마이페이지 API", description = """
+			- Description : 이 API는 마이페이지를 조회합니다.
+		""")
+	@ApiResponse(responseCode = "200")
+	ResponseEntity<UserDetailResponse> me();
 }

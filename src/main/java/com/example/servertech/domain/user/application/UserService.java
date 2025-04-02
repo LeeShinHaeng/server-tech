@@ -5,6 +5,7 @@ import com.example.servertech.domain.user.entity.User;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
+import com.example.servertech.domain.user.presentation.response.UserDetailResponse;
 import com.example.servertech.domain.user.presentation.response.UserPersistResponse;
 import com.example.servertech.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,10 @@ public class UserService {
 	public void delete() {
 		User me = me();
 		me.delete();
+	}
+
+	public UserDetailResponse mypage() {
+		return UserDetailResponse.create(me());
 	}
 
 	private User me() {
