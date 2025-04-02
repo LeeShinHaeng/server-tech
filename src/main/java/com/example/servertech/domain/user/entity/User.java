@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity {
 	@Column(nullable = false)
 	private String password;
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	@Enumerated(value = STRING)
 	private UserRole role;
 
