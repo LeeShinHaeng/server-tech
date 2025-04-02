@@ -43,7 +43,8 @@ public class UserService {
 	public void update(UserCreateRequest request) {
 		User me = me();
 		me.updateEmail(request.email());
-		me.updatePassword(request.password());
+		String encode = passwordEncoder.encode(request.password());
+		me.updatePassword(encode);
 		me.updateName(request.name());
 	}
 

@@ -7,7 +7,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Builder
 public record TokenResponse(
-	@Schema(description = "생성된 토큰", example = "", requiredMode = REQUIRED)
+	@Schema(description = "생성된 토큰", example = "eyJ0eXAiNiJ9.eyJpYXQiOjE3UwifQ.WqrmVDKVzgc", requiredMode = REQUIRED)
 	String accessToken
 ) {
 	public static TokenResponse of(String accessToken) {

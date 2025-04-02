@@ -7,6 +7,7 @@ import com.example.servertech.domain.user.presentation.response.TokenResponse;
 import com.example.servertech.domain.user.presentation.response.UserPersistResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,7 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
+	@DeleteMapping
 	public ResponseEntity<Void> delete() {
 		userService.delete();
 		return ResponseEntity.noContent().build();
