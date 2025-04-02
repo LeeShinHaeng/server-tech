@@ -22,7 +22,7 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	public void deleteById(Long id) {
-		jpaRepository.deleteById(id);
+	public Optional<User> findByEmail(String email) {
+		return jpaRepository.findByEmail(email);
 	}
 }

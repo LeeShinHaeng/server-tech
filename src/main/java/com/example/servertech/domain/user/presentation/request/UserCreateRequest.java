@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
-public record CreateUserRequest(
+public record UserCreateRequest(
 	@Schema(description = "이름", example = "이신행", requiredMode = REQUIRED)
 	String name,
 

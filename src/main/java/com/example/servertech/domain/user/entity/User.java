@@ -11,7 +11,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
@@ -25,7 +31,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "\"user\"")
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PROTECTED)
-public class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
@@ -39,7 +45,7 @@ public class User extends BaseTimeEntity {
 	@Column(nullable = false)
 	private String password;
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	@Enumerated(value = STRING)
 	private UserRole role;
 
@@ -74,6 +80,16 @@ public class User extends BaseTimeEntity {
 	}
 
 	public boolean isPasswordMatch(String password, PasswordEncoder passwordEncoder) {
-		return passwordEncoder.matches(password, password);
+		return passwordEncoder.matches(password, this.password);
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+	}
+
+	@Override
+	public String getUsername() {
+		return id.toString();
 	}
 }
