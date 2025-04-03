@@ -59,7 +59,7 @@ public class UserService {
 		return UserDetailResponse.create(me());
 	}
 
-	private User me() {
+	public User me() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if (authentication == null
