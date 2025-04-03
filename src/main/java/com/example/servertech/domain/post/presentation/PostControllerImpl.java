@@ -5,7 +5,6 @@ import com.example.servertech.domain.post.presentation.request.PostCreateRequest
 import com.example.servertech.domain.post.presentation.response.PostDetailResponse;
 import com.example.servertech.domain.post.presentation.response.PostListResponse;
 import com.example.servertech.domain.post.presentation.response.PostPersistResponse;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,14 +40,14 @@ public class PostControllerImpl implements PostController {
 
 	@Override
 	@GetMapping("/{id}")
-	public ResponseEntity<PostDetailResponse> get(@Positive @PathVariable Long id) {
+	public ResponseEntity<PostDetailResponse> get(@PathVariable Long id) {
 		PostDetailResponse response = postService.findById(id);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
 	@PatchMapping("/{id}")
-	public ResponseEntity<Void> update(@Positive @PathVariable Long id,
+	public ResponseEntity<Void> update(@PathVariable Long id,
 									   @RequestBody PostCreateRequest request) {
 		postService.update(id, request);
 		return ResponseEntity.noContent().build();
@@ -56,7 +55,7 @@ public class PostControllerImpl implements PostController {
 
 	@Override
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@Positive @PathVariable Long id) {
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		postService.delete(id);
 		return ResponseEntity.noContent().build();
 	}

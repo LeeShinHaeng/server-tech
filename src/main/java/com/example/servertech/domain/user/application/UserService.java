@@ -23,6 +23,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 
+	@Transactional
 	public UserPersistResponse register(UserCreateRequest request) {
 		String encode = passwordEncoder.encode(request.password());
 		User user = User.createNormal(request.name(), request.email(), encode);
@@ -30,6 +31,7 @@ public class UserService {
 		return UserPersistResponse.of(save.getId());
 	}
 
+	@Transactional(readOnly = true)
 	public TokenResponse login(UserLoginRequest request) {
 		User user = userRepository.findByEmail(request.email())
 			.orElseThrow(() -> new RuntimeException("로그인에 실패헸습니다"));
@@ -59,6 +61,7 @@ public class UserService {
 		return UserDetailResponse.create(me());
 	}
 
+	@Transactional(readOnly = true)
 	public User me() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
