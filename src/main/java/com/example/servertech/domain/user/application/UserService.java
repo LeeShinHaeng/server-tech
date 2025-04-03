@@ -57,6 +57,7 @@ public class UserService {
 		me.delete();
 	}
 
+	@Transactional(readOnly = true)
 	public UserDetailResponse mypage() {
 		return UserDetailResponse.create(me());
 	}

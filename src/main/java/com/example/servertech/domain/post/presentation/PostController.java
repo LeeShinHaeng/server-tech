@@ -43,7 +43,7 @@ public interface PostController {
 	@Operation(summary = "게시글 수정 API", description = """
 			- Description : 이 API는 게시글을 수정 합니다.
 		""")
-	@ApiResponse(responseCode = "200")
+	@ApiResponse(responseCode = "204")
 	ResponseEntity<Void> update(Long id, PostCreateRequest request);
 
 	@Operation(summary = "게시글 삭제 API", description = """
