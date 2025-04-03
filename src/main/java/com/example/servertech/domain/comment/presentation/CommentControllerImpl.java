@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comments")
@@ -26,13 +28,15 @@ public class CommentControllerImpl implements CommentController {
 	public ResponseEntity<CommentPersistResponse> write(
 		@PathVariable Long postId,
 		@RequestBody CommentCreateRequest request) {
-		return null;
+		CommentPersistResponse response = commentService.create(postId, request);
+		return ResponseEntity.status(CREATED).body(response);
 	}
 
 	@Override
 	@GetMapping("/{postId}")
 	public ResponseEntity<CommentListResponse> getByPostId(@PathVariable Long postId) {
-		return null;
+		CommentListResponse response = commentService.findAllByPostId(postId);
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
@@ -40,12 +44,14 @@ public class CommentControllerImpl implements CommentController {
 	public ResponseEntity<Void> update(
 		@PathVariable Long id,
 		@RequestBody CommentCreateRequest request) {
-		return null;
+		CommentListResponse response = commentService.update(id, request);
+		return ResponseEntity.noContent().build();
 	}
 
 	@Override
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		return null;
+		CommentListResponse response = commentService.delete(id);
+		return ResponseEntity.noContent().build();
 	}
 }
