@@ -4,6 +4,7 @@ import com.example.servertech.domain.comment.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,11 +19,11 @@ public class CommentRepositoryImpl implements CommentRepository {
 
 	@Override
 	public Optional<Comment> findById(Long id) {
-		return jpaRepository.findById(id);
+		return jpaRepository.findByIdAndDeletedAtIsNull(id);
 	}
 
 	@Override
-	public void deleteById(Long id) {
-		jpaRepository.deleteById(id);
+	public List<Comment> findByPostId(Long postId) {
+		return jpaRepository.findByPostIdAndDeletedAtIsNull(postId);
 	}
 }
