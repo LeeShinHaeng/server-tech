@@ -2,7 +2,7 @@ package com.example.servertech.domain.comment.presentation;
 
 import com.example.servertech.domain.comment.application.CommentService;
 import com.example.servertech.domain.comment.presentation.request.CommentCreateRequest;
-import com.example.servertech.domain.comment.presentation.response.CommentDetailResponse;
+import com.example.servertech.domain.comment.presentation.response.CommentListResponse;
 import com.example.servertech.domain.comment.presentation.response.CommentPersistResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class CommentControllerImpl implements CommentController {
 
 	@Override
 	@GetMapping("/{postId}")
-	public ResponseEntity<CommentDetailResponse> getByPostId(@PathVariable Long postId) {
+	public ResponseEntity<CommentListResponse> getByPostId(@PathVariable Long postId) {
 		return null;
 	}
 

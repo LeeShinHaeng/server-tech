@@ -1,7 +1,7 @@
 package com.example.servertech.domain.comment.presentation;
 
 import com.example.servertech.domain.comment.presentation.request.CommentCreateRequest;
-import com.example.servertech.domain.comment.presentation.response.CommentDetailResponse;
+import com.example.servertech.domain.comment.presentation.response.CommentListResponse;
 import com.example.servertech.domain.comment.presentation.response.CommentPersistResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,9 +27,9 @@ public interface CommentController {
 		""")
 	@ApiResponse(
 		responseCode = "200",
-		content = @Content(schema = @Schema(implementation = CommentDetailResponse.class))
+		content = @Content(schema = @Schema(implementation = CommentListResponse.class))
 	)
-	ResponseEntity<CommentDetailResponse> getByPostId(Long postId);
+	ResponseEntity<CommentListResponse> getByPostId(Long postId);
 
 	@Operation(summary = "댓글 수정 API", description = """
 			- Description : 이 API는 댓글을 수정 합니다.

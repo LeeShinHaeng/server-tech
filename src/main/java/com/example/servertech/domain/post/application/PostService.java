@@ -50,7 +50,7 @@ public class PostService {
 			.orElseThrow(() -> new RuntimeException("해당 아이디의 게시글이 존재하지 않습니다"));
 
 		if(! post.getWriter().getId().equals(userService.me().getId())){
-			throw new RuntimeException("글쓴이와 로그인한 유저가 일치하지 않습니다");
+			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
 		}
 
 		post.updateTitle(request.title());
@@ -63,7 +63,7 @@ public class PostService {
 			.orElseThrow(() -> new RuntimeException("해당 아이디의 게시글이 존재하지 않습니다"));
 
 		if(! post.getWriter().getId().equals(userService.me().getId())){
-			throw new RuntimeException("글쓴이와 로그인한 유저가 일치하지 않습니다");
+			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
 		}
 
 		post.delete();
