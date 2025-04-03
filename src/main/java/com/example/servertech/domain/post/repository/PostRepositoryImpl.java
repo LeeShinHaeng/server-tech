@@ -4,6 +4,7 @@ import com.example.servertech.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,12 +18,12 @@ public class PostRepositoryImpl implements PostRepository {
 	}
 
 	@Override
-	public Optional<Post> findById(Long id) {
-		return jpaRepository.findById(id);
+	public List<Post> findAll() {
+		return jpaRepository.findAllByDeletedAtIsNull();
 	}
 
 	@Override
-	public void deleteById(Long id) {
-		jpaRepository.deleteById(id);
+	public Optional<Post> findById(Long id) {
+		return jpaRepository.findByIdAndDeletedAtIsNull(id);
 	}
 }
