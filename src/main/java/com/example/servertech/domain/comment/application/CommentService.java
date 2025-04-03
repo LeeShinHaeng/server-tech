@@ -7,12 +7,13 @@ import com.example.servertech.domain.comment.presentation.response.CommentPersis
 import com.example.servertech.domain.comment.repository.CommentRepository;
 import com.example.servertech.domain.post.application.PostService;
 import com.example.servertech.domain.post.entity.Post;
-import com.example.servertech.domain.post.repository.PostRepository;
 import com.example.servertech.domain.user.application.UserService;
 import com.example.servertech.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +34,33 @@ public class CommentService {
 
 	@Transactional(readOnly = true)
 	public CommentListResponse findAllByPostId(Long postId) {
-		return null;
+		List<Comment> commentList = commentRepository.findByPostId(postId);
+		return CommentListResponse.create(commentList);
 	}
 
 	@Transactional
-	public CommentListResponse update(Long id, CommentCreateRequest request) {
-		return null;
+	public void update(Long id, CommentCreateRequest request) {
+		User me = userService.me();
+		Comment comment = commentRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 아이디의 댓글이 존재하지 않습니다"));
+
+		if (!comment.getWriter().getId().equals(me.getId())) {
+			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
+		}
+
+		comment.updateContent(request.content());
 	}
 
 	@Transactional
-	public CommentListResponse delete(Long id) {
-		return null;
+	public void delete(Long id) {
+		User me = userService.me();
+		Comment comment = commentRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 아이디의 댓글이 존재하지 않습니다"));
+
+		if (!comment.getWriter().getId().equals(me.getId())) {
+			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
+		}
+
+		comment.delete();
 	}
 }

@@ -44,14 +44,14 @@ public class CommentControllerImpl implements CommentController {
 	public ResponseEntity<Void> update(
 		@PathVariable Long id,
 		@RequestBody CommentCreateRequest request) {
-		CommentListResponse response = commentService.update(id, request);
+		commentService.update(id, request);
 		return ResponseEntity.noContent().build();
 	}
 
 	@Override
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		CommentListResponse response = commentService.delete(id);
+		commentService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 }
