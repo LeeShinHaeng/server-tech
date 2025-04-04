@@ -12,12 +12,16 @@ public record PostDetailResponse(
 	String title,
 
 	@Schema(description = "게시글 내용", example = "잘 부탁드립니닷!", requiredMode = REQUIRED)
-	String contents
+	String contents,
+
+	@Schema(description = "좋아요 여부", example = "true", requiredMode = REQUIRED)
+	Boolean like
 ) {
-	public static PostDetailResponse create(Post post) {
+	public static PostDetailResponse create(Post post, Boolean like) {
 		return PostDetailResponse.builder()
 			.title(post.getTitle())
 			.contents(post.getContent())
+			.like(like)
 			.build();
 	}
 }

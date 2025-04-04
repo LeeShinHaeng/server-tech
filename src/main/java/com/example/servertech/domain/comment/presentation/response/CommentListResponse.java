@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -22,15 +23,16 @@ public record CommentListResponse(
 	@Schema(description = "댓글 개수", example = "2", requiredMode = REQUIRED)
 	Integer size
 ) {
-	public static CommentListResponse create(List<Comment> commentList) {
+	public static CommentListResponse create(Map<Comment, Boolean> commentMap) {
 		return CommentListResponse.builder()
 			.commentResponseList(
-				commentList
+				commentMap
+					.keySet()
 					.stream()
-					.map(CommentResponse::create)
+					.map(comment -> CommentResponse.create(comment, commentMap.get(comment)))
 					.toList()
 			)
-			.size(commentList.size())
+			.size(commentMap.size())
 			.build();
 	}
 }

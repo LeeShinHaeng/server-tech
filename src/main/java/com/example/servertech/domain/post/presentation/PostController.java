@@ -51,4 +51,16 @@ public interface PostController {
 		""")
 	@ApiResponse(responseCode = "204")
 	ResponseEntity<Void> delete(Long id);
+
+	@Operation(summary = "게시글 좋아요 API", description = """
+			- Description : 이 API는 게시글에 좋아요를 추가 합니다.
+		""")
+	@ApiResponse(responseCode = "201")
+	ResponseEntity<Void> like(Long postId);
+
+	@Operation(summary = "게시글 좋아요 취소 API", description = """
+			- Description : 이 API는 게시글에 좋아요를 취소 합니다.
+		""")
+	@ApiResponse(responseCode = "204")
+	ResponseEntity<Void> unlike(Long postId);
 }
