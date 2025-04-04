@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -76,5 +78,14 @@ public class UserService {
 
 		return userRepository.findById(Long.parseLong(username))
 			.orElseThrow(() -> new RuntimeException("로그인이 확인되지 않습니다"));
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<User> getAuthenticatedUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+			return Optional.of(me());
+		}
+		return Optional.empty();
 	}
 }
