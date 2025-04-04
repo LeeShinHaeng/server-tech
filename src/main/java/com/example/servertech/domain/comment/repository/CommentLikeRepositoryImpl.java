@@ -4,7 +4,7 @@ import com.example.servertech.domain.comment.entity.CommentLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class CommentLikeRepositoryImpl implements CommentLikeRepository {
 	}
 
 	@Override
-	public Optional<CommentLike> findByCommentIdAndLikerId(Long commentId, Long userId) {
-		return jpaRepository.findByCommentIdAndLikerId(commentId, userId);
+	public List<CommentLike> findAllByCommentIdInAndLikerId(List<Long> commentIds, Long likerId) {
+		return jpaRepository.findAllByCommentIdInAndLikerId(commentIds, likerId);
 	}
 }

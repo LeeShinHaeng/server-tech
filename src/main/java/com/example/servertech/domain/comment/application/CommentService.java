@@ -15,9 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,19 +44,28 @@ public class CommentService {
 		List<Comment> commentList = commentRepository.findByPostId(postId);
 
 		User me = userService.getAuthenticatedUser().orElse(null);
-		Map<Comment, Boolean> commentMap = new HashMap<>();
-		if (me == null) {
-			for (Comment comment : commentList) {
-				commentMap.put(comment, false);
-			}
+		Set<Long> likedCommentIds;
+		if (me != null) {
+			likedCommentIds = commentLikeRepository
+				.findAllByCommentIdInAndLikerId(
+					commentList.stream().map(Comment::getId).toList(),
+					me.getId()
+				)
+				.stream()
+				.map(cl -> cl.getComment().getId())
+				.collect(Collectors.toSet());
 		} else {
-			for (Comment comment : commentList) {
-				commentMap.put(
-					comment,
-					commentLikeRepository.findByCommentIdAndLikerId(comment.getId(), me.getId()).isPresent()
-				);
-			}
+			likedCommentIds = Collections.emptySet();
 		}
+
+		Map<Comment, Boolean> commentMap = commentList
+			.stream()
+			.collect(
+				Collectors.toMap(
+					comment -> comment,
+					comment -> likedCommentIds.contains(comment.getId())
+				)
+			);
 
 		return CommentListResponse.create(commentMap);
 	}
