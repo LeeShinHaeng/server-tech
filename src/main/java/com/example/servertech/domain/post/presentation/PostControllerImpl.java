@@ -59,4 +59,18 @@ public class PostControllerImpl implements PostController {
 		postService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
+
+	@Override
+	@PostMapping("/like/{id}")
+	public ResponseEntity<Void> like(@PathVariable Long id) {
+		postService.like(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Override
+	@DeleteMapping("/like/{id}")
+	public ResponseEntity<Void> unlike(@PathVariable Long id) {
+		postService.unlike(id);
+		return ResponseEntity.noContent().build();
+	}
 }
