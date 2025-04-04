@@ -64,7 +64,7 @@ public class PostControllerImpl implements PostController {
 	@PostMapping("/like/{id}")
 	public ResponseEntity<Void> like(@PathVariable Long id) {
 		postService.like(id);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.status(CREATED).build();
 	}
 
 	@Override
