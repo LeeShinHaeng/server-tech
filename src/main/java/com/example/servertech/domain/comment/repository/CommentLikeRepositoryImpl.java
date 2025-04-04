@@ -4,6 +4,8 @@ import com.example.servertech.domain.comment.entity.CommentLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class CommentLikeRepositoryImpl implements CommentLikeRepository {
@@ -15,7 +17,12 @@ public class CommentLikeRepositoryImpl implements CommentLikeRepository {
 	}
 
 	@Override
-	public void deleteById(Long id) {
-		jpaRepository.deleteById(id);
+	public void deleteByCommentAndUser(Long commentId, Long userId) {
+		jpaRepository.deleteByCommentIdAndLikerId(commentId, userId);
+	}
+
+	@Override
+	public Optional<CommentLike> findByCommentIdAndLikerId(Long commentId, Long userId) {
+		return jpaRepository.findByCommentIdAndLikerId(commentId, userId);
 	}
 }

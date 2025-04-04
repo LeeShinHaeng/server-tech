@@ -12,10 +12,15 @@ import com.example.servertech.domain.post.entity.Post;
 import com.example.servertech.domain.user.application.UserService;
 import com.example.servertech.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +43,24 @@ public class CommentService {
 	@Transactional(readOnly = true)
 	public CommentListResponse findAllByPostId(Long postId) {
 		List<Comment> commentList = commentRepository.findByPostId(postId);
-		return CommentListResponse.create(commentList);
+
+		Map<Comment, Boolean> commentMap = new HashMap<>();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+			for (Comment comment : commentList) {
+				commentMap.put(comment, false);
+			}
+		} else {
+			User me = userService.me();
+			for (Comment comment : commentList) {
+				commentMap.put(
+					comment,
+					commentLikeRepository.findByCommentIdAndLikerId(comment.getId(), me.getId()).isPresent()
+				);
+			}
+		}
+
+		return CommentListResponse.create(commentMap);
 	}
 
 	@Transactional
@@ -71,17 +93,17 @@ public class CommentService {
 	}
 
 	@Transactional
-	public void like(Long id) {
+	public void like(Long commentId) {
 		commentLikeRepository.save(
 			CommentLike.create(
-				getComment(id),
+				getComment(commentId),
 				userService.me()
 			)
 		);
 	}
 
 	@Transactional
-	public void unlike(Long id) {
-		commentLikeRepository.deleteById(id);
+	public void unlike(Long commentId) {
+		commentLikeRepository.deleteByCommentAndUser(commentId, userService.me().getId());
 	}
 }

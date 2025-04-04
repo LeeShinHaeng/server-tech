@@ -47,11 +47,11 @@ public interface CommentController {
 			- Description : 이 API는 댓글에 좋아요를 추가 합니다.
 		""")
 	@ApiResponse(responseCode = "201")
-	ResponseEntity<Void> like(Long id);
+	ResponseEntity<Void> like(Long commetId);
 
 	@Operation(summary = "댓글 좋아요 취소 API", description = """
 			- Description : 이 API는 댓글에 좋아요를 취소 합니다.
 		""")
 	@ApiResponse(responseCode = "204")
-	ResponseEntity<Void> unlike(Long id);
+	ResponseEntity<Void> unlike(Long commentId);
 }

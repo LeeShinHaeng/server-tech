@@ -15,13 +15,17 @@ public record CommentResponse(
 	String writerName,
 
 	@Schema(description = "댓글 내용", example = "어서오세요!", requiredMode = REQUIRED)
-	String content
+	String content,
+
+	@Schema(description = "좋아요 여부", example = "true", requiredMode = REQUIRED)
+	Boolean like
 ) {
-	public static CommentResponse create(Comment comment) {
+	public static CommentResponse create(Comment comment, Boolean like) {
 		return CommentResponse.builder()
 			.id(comment.getId())
 			.writerName(comment.getWriter().getName())
 			.content(comment.getContent())
+			.like(like)
 			.build();
 	}
 }

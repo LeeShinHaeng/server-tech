@@ -56,16 +56,16 @@ public class CommentControllerImpl implements CommentController {
 	}
 
 	@Override
-	@PostMapping("/like/{id}")
-	public ResponseEntity<Void> like(@PathVariable Long id) {
-		commentService.like(id);
+	@PostMapping("/like/{commetId}")
+	public ResponseEntity<Void> like(@PathVariable Long commetId) {
+		commentService.like(commetId);
 		return ResponseEntity.status(CREATED).build();
 	}
 
 	@Override
-	@DeleteMapping("/like/{id}")
-	public ResponseEntity<Void> unlike(@PathVariable Long id) {
-		commentService.unlike(id);
+	@DeleteMapping("/like/{commentId}")
+	public ResponseEntity<Void> unlike(@PathVariable Long commentId) {
+		commentService.unlike(commentId);
 		return ResponseEntity.noContent().build();
 	}
 }
