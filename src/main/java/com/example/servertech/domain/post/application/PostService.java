@@ -9,7 +9,11 @@ import com.example.servertech.domain.post.presentation.response.PostPersistRespo
 import com.example.servertech.domain.post.repository.PostLikeRepository;
 import com.example.servertech.domain.post.repository.PostRepository;
 import com.example.servertech.domain.user.application.UserService;
+import com.example.servertech.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +47,16 @@ public class PostService {
 	@Transactional(readOnly = true)
 	public PostDetailResponse findById(Long id) {
 		Post post = findPostById(id);
-		return PostDetailResponse.create(post);
+
+		boolean liked = false;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+			User user = userService.me();
+			liked = postLikeRepository.findByPostAndUser(post.getId(), user.getId())
+				.isPresent();
+		}
+
+		return PostDetailResponse.create(post, liked);
 	}
 
 	@Transactional
@@ -86,6 +99,6 @@ public class PostService {
 
 	@Transactional
 	public void unlike(Long id) {
-		postLikeRepository.deleteById(id);
+		postLikeRepository.deleteByPostAndUser(id, userService.me().getId());
 	}
 }

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -67,11 +66,11 @@ public class CommentService {
 	}
 
 	private Comment getComment(Long id) {
-		Comment comment = commentRepository.findById(id)
+		return commentRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("해당 아이디의 댓글이 존재하지 않습니다"));
-		return comment;
 	}
 
+	@Transactional
 	public void like(Long id) {
 		commentLikeRepository.save(
 			CommentLike.create(
@@ -81,6 +80,7 @@ public class CommentService {
 		);
 	}
 
+	@Transactional
 	public void unlike(Long id) {
 		commentLikeRepository.deleteById(id);
 	}
