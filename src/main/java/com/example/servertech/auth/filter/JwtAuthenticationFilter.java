@@ -1,5 +1,6 @@
 package com.example.servertech.auth.filter;
 
+import com.example.servertech.auth.exception.FilterInternalException;
 import com.example.servertech.auth.jwt.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("필터 내부 에러");
+			throw new FilterInternalException();
 		}
 		filterChain.doFilter(request, response);
 	}

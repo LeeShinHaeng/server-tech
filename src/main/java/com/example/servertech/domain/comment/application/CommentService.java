@@ -2,6 +2,8 @@ package com.example.servertech.domain.comment.application;
 
 import com.example.servertech.domain.comment.entity.Comment;
 import com.example.servertech.domain.comment.entity.CommentLike;
+import com.example.servertech.domain.comment.exception.NoSuchCommentException;
+import com.example.servertech.domain.comment.exception.WriterNotMatchException;
 import com.example.servertech.domain.comment.presentation.request.CommentCreateRequest;
 import com.example.servertech.domain.comment.presentation.response.CommentListResponse;
 import com.example.servertech.domain.comment.presentation.response.CommentPersistResponse;
@@ -76,7 +78,7 @@ public class CommentService {
 		Comment comment = getComment(id);
 
 		if (!comment.getWriter().getId().equals(me.getId())) {
-			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
+			throw new WriterNotMatchException();
 		}
 
 		comment.updateContent(request.content());
@@ -88,7 +90,7 @@ public class CommentService {
 		Comment comment = getComment(id);
 
 		if (!comment.getWriter().getId().equals(me.getId())) {
-			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
+			throw new WriterNotMatchException();
 		}
 
 		comment.delete();
@@ -96,7 +98,7 @@ public class CommentService {
 
 	private Comment getComment(Long id) {
 		return commentRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("해당 아이디의 댓글이 존재하지 않습니다"));
+			.orElseThrow(NoSuchCommentException::new);
 	}
 
 	@Transactional

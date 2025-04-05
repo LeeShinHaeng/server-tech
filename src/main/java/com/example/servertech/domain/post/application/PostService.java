@@ -2,6 +2,8 @@ package com.example.servertech.domain.post.application;
 
 import com.example.servertech.domain.post.entity.Post;
 import com.example.servertech.domain.post.entity.PostLike;
+import com.example.servertech.domain.post.exception.NoSuchPostException;
+import com.example.servertech.domain.post.exception.WriterNotMatchException;
 import com.example.servertech.domain.post.presentation.request.PostCreateRequest;
 import com.example.servertech.domain.post.presentation.response.PostDetailResponse;
 import com.example.servertech.domain.post.presentation.response.PostListResponse;
@@ -60,7 +62,7 @@ public class PostService {
 		Post post = findPostById(id);
 
 		if (!post.getWriter().getId().equals(userService.me().getId())) {
-			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
+			throw new WriterNotMatchException();
 		}
 
 		post.updateTitle(request.title());
@@ -72,7 +74,7 @@ public class PostService {
 		Post post = findPostById(id);
 
 		if (!post.getWriter().getId().equals(userService.me().getId())) {
-			throw new RuntimeException("작성자와 로그인한 유저가 일치하지 않습니다");
+			throw new WriterNotMatchException();
 		}
 
 		post.delete();
@@ -80,7 +82,7 @@ public class PostService {
 
 	public Post findPostById(Long id) {
 		return postRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("해당 아이디의 게시글이 존재하지 않습니다"));
+			.orElseThrow(NoSuchPostException::new);
 	}
 
 	@Transactional
