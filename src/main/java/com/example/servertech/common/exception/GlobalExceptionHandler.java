@@ -2,7 +2,6 @@ package com.example.servertech.common.exception;
 
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSourceResolvable;
@@ -25,8 +24,6 @@ import static com.example.servertech.common.exception.GlobalExceptionCode.FORBID
 import static com.example.servertech.common.exception.GlobalExceptionCode.INVALID_INPUT;
 import static com.example.servertech.common.exception.GlobalExceptionCode.SERVER_ERROR;
 
-
-@Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -55,8 +52,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException exception,
-																			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
+																			HttpHeaders headers,
+																			HttpStatusCode status,
+																			WebRequest request) {
 		String message = exception.getParameterValidationResults().stream()
 			.map(ParameterValidationResult::getResolvableErrors)
 			.flatMap(List::stream)
@@ -69,8 +67,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
-																  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
+																  HttpHeaders headers,
+																  HttpStatusCode status,
+																  WebRequest request) {
 		String message = exception.getFieldErrors().stream()
 			.map(error -> error.getField() + ": " + error.getDefaultMessage())
 			.collect(Collectors.joining(", "));
@@ -81,8 +80,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException exception,
-														HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
+														HttpHeaders headers,
+														HttpStatusCode status,
+														WebRequest request) {
 		String message = String.format("Failed to convert '%s' with value: '%s'.",
 			exception.getPropertyName(),
 			exception.getValue());
