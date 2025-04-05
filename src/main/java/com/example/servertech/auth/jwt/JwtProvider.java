@@ -1,5 +1,7 @@
 package com.example.servertech.auth.jwt;
 
+import com.example.servertech.auth.exception.InvalidJwtException;
+import com.example.servertech.auth.exception.UnauthorizedUserException;
 import com.example.servertech.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -61,7 +63,7 @@ public class JwtProvider {
 				.parseClaimsJws(token);
 			return true;
 		} catch (Exception e) {
-			throw new RuntimeException("JWT가 유효하지 않습니다");
+			throw new InvalidJwtException();
 		}
 	}
 
@@ -84,7 +86,7 @@ public class JwtProvider {
 		return switch (role) {
 			case "ADMIN" -> Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
 			case "NORMAL" -> Collections.singleton(new SimpleGrantedAuthority("ROLE_NORMAL"));
-			default -> throw new RuntimeException("유효한 역할의 유저가 아닙니다");
+			default -> throw new UnauthorizedUserException();
 		};
 	}
 

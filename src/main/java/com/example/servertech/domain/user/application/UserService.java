@@ -2,6 +2,10 @@ package com.example.servertech.domain.user.application;
 
 import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.domain.user.entity.User;
+import com.example.servertech.domain.user.exception.AuthorizationException;
+import com.example.servertech.domain.user.exception.InvalidPasswordException;
+import com.example.servertech.domain.user.exception.NoSuchEmailException;
+import com.example.servertech.domain.user.exception.NotLoginException;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
@@ -36,9 +40,9 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public TokenResponse login(UserLoginRequest request) {
 		User user = userRepository.findByEmail(request.email())
-			.orElseThrow(() -> new RuntimeException("로그인에 실패헸습니다"));
+			.orElseThrow(NoSuchEmailException::new);
 		if (!user.isPasswordMatch(request.password(), passwordEncoder)) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다");
+			throw new InvalidPasswordException();
 		}
 
 		return authService.createToken(user.getId(), user.getRole());
@@ -71,13 +75,13 @@ public class UserService {
 		if (authentication == null
 			|| authentication.getPrincipal() == null
 			|| !(authentication.getPrincipal() instanceof UserDetails)) {
-			throw new RuntimeException("로그인이 확인되지 않습니다");
+			throw new NotLoginException();
 		}
 
 		String username = ((UserDetails) authentication.getPrincipal()).getUsername();
 
 		return userRepository.findById(Long.parseLong(username))
-			.orElseThrow(() -> new RuntimeException("로그인이 확인되지 않습니다"));
+			.orElseThrow(AuthorizationException::new);
 	}
 
 	@Transactional(readOnly = true)
