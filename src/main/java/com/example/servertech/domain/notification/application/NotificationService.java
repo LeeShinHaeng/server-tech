@@ -1,6 +1,8 @@
 package com.example.servertech.domain.notification.application;
 
+import com.example.servertech.domain.notification.entity.NotificationType;
 import com.example.servertech.domain.notification.exception.NoSuchNotificationException;
+import com.example.servertech.domain.notification.exception.NoSuchNotificationTypeException;
 import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
 import com.example.servertech.domain.notification.presentation.response.NotificationDetailResponse;
 import com.example.servertech.domain.notification.presentation.response.NotificationListResponse;
@@ -28,7 +30,7 @@ public class NotificationService {
 		User receiver = userService.getUserById(request.receiverId());
 
 		return notificationRepository.save(Notification.create(
-			request.title(), request.content(), request.type(), receiver
+			request.type().getDescription(), request.content(), request.type(), receiver
 		));
 	}
 

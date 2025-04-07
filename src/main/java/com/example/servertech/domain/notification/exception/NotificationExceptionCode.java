@@ -11,6 +11,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @AllArgsConstructor
 public enum NotificationExceptionCode implements ExceptionCode {
 	NO_SUCH_NOTIFICATION(BAD_REQUEST, "해당 아이디의 알림이 존재하지 않습니다"),
+	NO_SUCH_NOTIFICATION_TYPE(BAD_REQUEST, "해당 알림 타입이 존재하지 않습니다"),
 	;
 
 	private final HttpStatus status;
