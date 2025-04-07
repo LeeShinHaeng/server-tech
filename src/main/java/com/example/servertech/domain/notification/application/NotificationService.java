@@ -2,6 +2,7 @@ package com.example.servertech.domain.notification.application;
 
 import com.example.servertech.domain.notification.entity.Notification;
 import com.example.servertech.domain.notification.exception.NoSuchNotificationException;
+import com.example.servertech.domain.notification.exception.ReceiverNotMatchException;
 import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
 import com.example.servertech.domain.notification.presentation.response.NotificationDetailResponse;
 import com.example.servertech.domain.notification.presentation.response.NotificationListResponse;
@@ -46,7 +47,11 @@ public class NotificationService {
 		Notification notification = notificationRepository.findById(id)
 			.orElseThrow(NoSuchNotificationException::new);
 
-		notification.read();
-		return NotificationDetailResponse.create(notification);
+		Optional<User> user = userService.getAuthenticatedUser();
+		if (user.isPresent() && user.get().getId().equals(notification.getReceiver().getId())) {
+			notification.read();
+			return NotificationDetailResponse.create(notification);
+		}
+		throw new ReceiverNotMatchException();
 	}
 }

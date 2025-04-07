@@ -33,7 +33,7 @@ public interface NotificationController {
 	ResponseEntity<NotificationListResponse> findAll();
 
 	@Operation(summary = "알림 세부 조회 API", description = """
-			- Description : 이 API는 로그인 한 사용자의 알림을 전체 조회 합니다.
+			- Description : 이 API는 알림을 세부 조회 합니다.
 		""")
 	@ApiResponse(
 		responseCode = "200",
