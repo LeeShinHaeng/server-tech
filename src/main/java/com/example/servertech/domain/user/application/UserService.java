@@ -5,6 +5,7 @@ import com.example.servertech.domain.user.entity.User;
 import com.example.servertech.domain.user.exception.AuthorizationException;
 import com.example.servertech.domain.user.exception.InvalidPasswordException;
 import com.example.servertech.domain.user.exception.NoSuchEmailException;
+import com.example.servertech.domain.user.exception.NoSuchUserException;
 import com.example.servertech.domain.user.exception.NotLoginException;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
@@ -91,5 +92,11 @@ public class UserService {
 			return Optional.of(me());
 		}
 		return Optional.empty();
+	}
+
+	@Transactional(readOnly = true)
+	public User getUserById(Long id) {
+		return userRepository.findById(id)
+			.orElseThrow(NoSuchUserException::new);
 	}
 }
