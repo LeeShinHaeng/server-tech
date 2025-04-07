@@ -1,6 +1,8 @@
 package com.example.servertech.domain.notification.application;
 
+import com.example.servertech.domain.notification.exception.NoSuchNotificationException;
 import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
+import com.example.servertech.domain.notification.presentation.response.NotificationDetailResponse;
 import com.example.servertech.domain.notification.presentation.response.NotificationListResponse;
 import com.example.servertech.domain.notification.entity.Notification;
 import com.example.servertech.domain.notification.repository.NotificationRepository;
@@ -20,6 +22,7 @@ public class NotificationService {
 	private final UserService userService;
 	private final NotificationRepository notificationRepository;
 
+	// todo 생성시 로직 변경
 	@Transactional
 	public Notification save(NotificationRequest request) {
 		User receiver = userService.getUserById(request.receiverId());
@@ -29,7 +32,6 @@ public class NotificationService {
 		));
 	}
 
-	// 내 알림 전체 조회
 	@Transactional(readOnly = true)
 	public NotificationListResponse findByLoginUser() {
 		Optional<User> user = userService.getAuthenticatedUser();
@@ -40,5 +42,12 @@ public class NotificationService {
 		return NotificationListResponse.create(new ArrayList<>());
 	}
 
-	// 알림 새부 내용 조회 -> 읽음 처리
+	@Transactional
+	public NotificationDetailResponse findById(Long id) {
+		Notification notification = notificationRepository.findById(id)
+			.orElseThrow(NoSuchNotificationException::new);
+
+		notification.read();
+		return NotificationDetailResponse.create(notification);
+	}
 }

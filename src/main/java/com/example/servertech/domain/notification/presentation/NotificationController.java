@@ -1,6 +1,7 @@
 package com.example.servertech.domain.notification.presentation;
 
 import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
+import com.example.servertech.domain.notification.presentation.response.NotificationDetailResponse;
 import com.example.servertech.domain.notification.presentation.response.NotificationListResponse;
 import com.example.servertech.domain.notification.entity.Notification;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,4 +31,13 @@ public interface NotificationController {
 		content = @Content(schema = @Schema(implementation = NotificationListResponse.class))
 	)
 	ResponseEntity<NotificationListResponse> findAll();
+
+	@Operation(summary = "알림 세부 조회 API", description = """
+			- Description : 이 API는 로그인 한 사용자의 알림을 전체 조회 합니다.
+		""")
+	@ApiResponse(
+		responseCode = "200",
+		content = @Content(schema = @Schema(implementation = NotificationDetailResponse.class))
+	)
+	ResponseEntity<NotificationDetailResponse> findById(Long id);
 }
