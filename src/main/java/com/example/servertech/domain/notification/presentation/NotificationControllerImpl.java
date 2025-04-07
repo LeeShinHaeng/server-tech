@@ -1,7 +1,8 @@
 package com.example.servertech.domain.notification.presentation;
 
 import com.example.servertech.domain.notification.application.NotificationService;
-import com.example.servertech.domain.notification.dto.NotificationRequest;
+import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
+import com.example.servertech.domain.notification.presentation.response.NotificationListResponse;
 import com.example.servertech.domain.notification.entity.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,12 @@ public class NotificationControllerImpl implements NotificationController {
 	public ResponseEntity<Notification> send(NotificationRequest request) {
 		Notification save = notificationService.save(request);
 		return ResponseEntity.status(CREATED).body(save);
+	}
+
+	@Override
+	@PostMapping("/me")
+	public ResponseEntity<NotificationListResponse> findAll() {
+		NotificationListResponse response = notificationService.findByLoginUser();
+		return ResponseEntity.ok(response);
 	}
 }

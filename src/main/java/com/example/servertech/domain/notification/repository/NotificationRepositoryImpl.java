@@ -4,6 +4,7 @@ import com.example.servertech.domain.notification.entity.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,5 +25,10 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 	@Override
 	public void deleteById(Long id) {
 		jpaRepository.deleteById(id);
+	}
+
+	@Override
+	public List<Notification> findByReceiverId(Long receiverId) {
+		return jpaRepository.findByReceiverId(receiverId);
 	}
 }

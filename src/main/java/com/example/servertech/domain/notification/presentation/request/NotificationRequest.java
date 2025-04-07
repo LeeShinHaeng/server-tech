@@ -1,4 +1,4 @@
-package com.example.servertech.domain.notification.dto;
+package com.example.servertech.domain.notification.presentation.request;
 
 import com.example.servertech.domain.notification.entity.NotificationType;
 import lombok.Builder;
