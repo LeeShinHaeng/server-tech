@@ -2,9 +2,11 @@ package com.example.servertech.domain.user.presentation.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
+@Builder
 public record UserCreateRequest(
 	@Schema(description = "이름", example = "이신행", requiredMode = REQUIRED)
 	String name,

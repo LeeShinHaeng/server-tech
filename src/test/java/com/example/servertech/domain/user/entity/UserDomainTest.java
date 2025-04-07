@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserDomainTest {
 	private User user;
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	private final String NAME = "이신행";
 	private final String EMAIL = "user@example.com";
 	private final String RAW_PASSWORD = "password";
@@ -37,7 +37,7 @@ class UserDomainTest {
 
 	@Test
 	@DisplayName("createNormal 은 새로운 User 객체를 생성합니다.")
-	void createNormal_Success(){
+	void createNormal_Success() {
 		// when
 		User newUser = User.createNormal(NAME, EMAIL, ENCODED_PASSWORD);
 
@@ -51,7 +51,7 @@ class UserDomainTest {
 
 	@Test
 	@DisplayName("createAdmin 은 ADMIN 역할의 User 객체를 생성합니다.")
-	void createAdmin_Success(){
+	void createAdmin_Success() {
 		// when
 		User newUser = User.createAdmin(NAME, EMAIL, ENCODED_PASSWORD);
 
@@ -64,8 +64,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("updateName 은 User의 이름을 변경합니다.")
-	void updateName_Success(){
+	@DisplayName("updateName 은 User 의 이름을 변경합니다.")
+	void updateName_Success() {
 		//given
 		String newName = "홍길동";
 
@@ -77,8 +77,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("updateEmail 은 User의 이메일을 변경합니다.")
-	void updateEmail_Success(){
+	@DisplayName("updateEmail 은 User 의 이메일을 변경합니다.")
+	void updateEmail_Success() {
 		//given
 		String newEmail = "new@example.com";
 
@@ -90,8 +90,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("updatePassword 은 User의 비밀번호를 변경합니다.")
-	void updatePassword_Success(){
+	@DisplayName("updatePassword 은 User 의 비밀번호를 변경합니다.")
+	void updatePassword_Success() {
 		//given
 		String newPassword = encoder.encode("new-password");
 
@@ -103,8 +103,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("isPasswordMatch 은 User의 비밀번호가 맞으면 true를 반환합니다.")
-	void isPasswordMatch_True(){
+	@DisplayName("isPasswordMatch 은 User 의 비밀번호가 맞으면 true 를 반환합니다.")
+	void isPasswordMatch_True() {
 		// when
 		boolean isMatch = user.isPasswordMatch("password", encoder);
 
@@ -113,8 +113,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("isPasswordMatch 은 User의 비밀번호가 아니면 false를 반환합니다.")
-	void isPasswordMatch_False(){
+	@DisplayName("isPasswordMatch 은 User 의 비밀번호가 아니면 false 를 반환합니다.")
+	void isPasswordMatch_False() {
 		//given
 		String newPassword = "not-password";
 
@@ -126,8 +126,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("getAuthorities 은 User의 role을 GrantedAuthority로 반환합니다.")
-	void getAuthorities_Success(){
+	@DisplayName("getAuthorities 은 User 의 role 을 GrantedAuthority 로 반환합니다.")
+	void getAuthorities_Success() {
 		// when
 		Collection<? extends GrantedAuthority> authorities = user.getAuthorities().stream().toList();
 
@@ -137,8 +137,8 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("getUsername 은 User의 id를 반환합니다.")
-	void getUsername_Success(){
+	@DisplayName("getUsername 은 User 의 id 를 반환합니다.")
+	void getUsername_Success() {
 		// when
 		String username = user.getUsername();
 
