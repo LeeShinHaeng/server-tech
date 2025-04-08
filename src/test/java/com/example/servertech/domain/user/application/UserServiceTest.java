@@ -12,7 +12,7 @@ import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
 import com.example.servertech.domain.user.presentation.response.UserDetailResponse;
 import com.example.servertech.domain.user.presentation.response.UserPersistResponse;
-import com.example.servertech.domain.user.repository.FakeUserRepository;
+import com.example.servertech.mock.repository.FakeUserRepository;
 import com.example.servertech.domain.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

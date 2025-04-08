@@ -1,13 +1,12 @@
-package com.example.servertech.domain.user.repository;
+package com.example.servertech.mock.repository;
 
 import com.example.servertech.domain.user.entity.User;
+import com.example.servertech.domain.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeUserRepository implements UserRepository {
