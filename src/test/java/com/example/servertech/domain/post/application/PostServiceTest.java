@@ -41,17 +41,17 @@ class PostServiceTest {
 	private PostRepository postRepository;
 	private PostLikeRepository postLikeRepository;
 
-	private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-	private final String USER_NAME = "이신행";
-	private final String EMAIL = "user@example.com";
-	private final String RAW_PASSWORD = "password";
 	private final String TITLE = "테스트 제목";
 	private final String CONTENT = "테스트 내용";
 	private Post post;
-	private User user;
 
 	@BeforeEach
 	void init() {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String USER_NAME = "이신행";
+		String EMAIL = "user@example.com";
+		String RAW_PASSWORD = "password";
+
 		postRepository = new FakePostRepository();
 		postLikeRepository = new FakePostLikeRepository();
 
@@ -64,7 +64,7 @@ class PostServiceTest {
 
 		postService = new PostService(userService, postRepository, postLikeRepository);
 
-		user = userRepository.save(
+		User user = userRepository.save(
 			User.builder()
 				.id(1L)
 				.name(USER_NAME)
