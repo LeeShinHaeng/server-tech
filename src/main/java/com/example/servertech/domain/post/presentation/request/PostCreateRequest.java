@@ -1,9 +1,11 @@
 package com.example.servertech.domain.post.presentation.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
+@Builder
 public record PostCreateRequest(
 	@Schema(description = "제목", example = "신입 인사", requiredMode = REQUIRED)
 	String title,

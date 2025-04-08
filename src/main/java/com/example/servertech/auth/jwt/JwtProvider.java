@@ -7,7 +7,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,11 +26,7 @@ import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 public class JwtProvider {
 	private final static String HEADER_AUTHORIZATION = "Authorization";
 	private final static String TOKEN_PREFIX = "Bearer ";
-	@Value("${jwt.issuer}")
-	private String JWT_ISSUER;
-	@Value("${jwt.key}")
-	private String SECRET_KEY;
-
+	private final JwtProperties jwtProperties;
 
 	public String generateAccessToken(Long id, UserRole role) {
 		Date now = new Date();
@@ -43,12 +38,12 @@ public class JwtProvider {
 
 		return Jwts.builder()
 			.setHeaderParam(TYPE, JWT_TYPE)
-			.setIssuer(JWT_ISSUER)
+			.setIssuer(jwtProperties.getIssuer())
 			.setIssuedAt(now)
 			.setExpiration(expiry)
 			.setSubject(id.toString())
 			.claim("role", role.name())
-			.signWith(HS256, SECRET_KEY)
+			.signWith(HS256, jwtProperties.getKey())
 			.compact();
 	}
 
@@ -59,7 +54,7 @@ public class JwtProvider {
 
 		try {
 			Jwts.parser()
-				.setSigningKey(SECRET_KEY)
+				.setSigningKey(jwtProperties.getKey())
 				.parseClaimsJws(token);
 			return true;
 		} catch (Exception e) {
@@ -100,7 +95,7 @@ public class JwtProvider {
 
 	private Claims getClaims(String token) {
 		return Jwts.parser()
-			.setSigningKey(SECRET_KEY)
+			.setSigningKey(jwtProperties.getKey())
 			.parseClaimsJws(token)
 			.getBody();
 	}
