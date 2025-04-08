@@ -40,7 +40,7 @@ class PostLikeDomainTest {
 
 	@Test
 	@DisplayName("create 는 PostLike 객체를 생성한다.")
-	void create() {
+	void create_Success() {
 		// when
 		PostLike postLike = PostLike.create(post, user);
 

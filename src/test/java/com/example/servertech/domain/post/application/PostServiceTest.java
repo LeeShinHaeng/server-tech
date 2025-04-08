@@ -224,7 +224,7 @@ class PostServiceTest {
 
 	@Test
 	@DisplayName("like 은 PostLike 객체를 생성한다.")
-	void like() {
+	void like_Success() {
 		// given
 		// when
 		postService.like(1L);
@@ -237,7 +237,7 @@ class PostServiceTest {
 
 	@Test
 	@DisplayName("unlike 은 PostLike 객체를 삭제한다.")
-	void unlike() {
+	void unlike_Success() {
 		// given
 		// when
 		postService.like(1L);

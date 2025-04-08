@@ -15,7 +15,6 @@ import com.example.servertech.domain.user.entity.User;
 import com.example.servertech.domain.user.repository.UserRepository;
 import com.example.servertech.mock.repository.FakeNotificationRepository;
 import com.example.servertech.mock.repository.FakeUserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

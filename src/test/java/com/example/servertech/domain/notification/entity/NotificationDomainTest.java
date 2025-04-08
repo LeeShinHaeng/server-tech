@@ -1,8 +1,8 @@
 package com.example.servertech.domain.notification.entity;
 
 import com.example.servertech.domain.user.entity.User;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 
 import static com.example.servertech.domain.notification.entity.NotificationType.COMMENT_LIKE;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class NotificationDomainTest {
 	private Notification notification;
@@ -46,7 +47,8 @@ class NotificationDomainTest {
 	}
 
 	@Test
-	void create() {
+	@DisplayName("create 는 Notification 객체를 생성한다.")
+	void create_Success() {
 		// when
 		Notification created = Notification.create(TITLE, CONTENT, COMMENT_LIKE, user);
 
@@ -59,7 +61,8 @@ class NotificationDomainTest {
 	}
 
 	@Test
-	void read() {
+	@DisplayName("read 는 Notification 의 isRead 를 true 로 변경한다.")
+	void read_Success() {
 		// when
 		assertEquals(false, notification.getIsRead());
 		notification.read();
