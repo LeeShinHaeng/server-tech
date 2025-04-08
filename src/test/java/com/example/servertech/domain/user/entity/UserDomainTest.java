@@ -39,14 +39,14 @@ class UserDomainTest {
 	@DisplayName("createNormal 은 새로운 User 객체를 생성합니다.")
 	void createNormal_Success() {
 		// when
-		User newUser = User.createNormal(NAME, EMAIL, ENCODED_PASSWORD);
+		User created = User.createNormal(NAME, EMAIL, ENCODED_PASSWORD);
 
 		// then
-		assertNotNull(newUser);
-		assertEquals(NAME, newUser.getName());
-		assertEquals(EMAIL, newUser.getEmail());
-		assertEquals(ENCODED_PASSWORD, newUser.getPassword());
-		assertEquals(NORMAL, newUser.getRole());
+		assertNotNull(created);
+		assertEquals(NAME, created.getName());
+		assertEquals(EMAIL, created.getEmail());
+		assertEquals(ENCODED_PASSWORD, created.getPassword());
+		assertEquals(NORMAL, created.getRole());
 	}
 
 	@Test
