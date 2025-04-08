@@ -198,7 +198,7 @@ class CommentServiceTest {
 	}
 
 	@Test
-	@DisplayName("like 는 CommentLike 객체를 생성합니다.")
+	@DisplayName("like 는 CommentLike 객체를 생성한다.")
 	void like() {
 		// given
 		List<Long> commentIdList = new ArrayList<>();
@@ -217,7 +217,7 @@ class CommentServiceTest {
 	}
 
 	@Test
-	@DisplayName("unlike 는 CommentLike 객체를 삭제합니다.")
+	@DisplayName("unlike 는 CommentLike 객체를 삭제한다.")
 	void unlike() {
 		// given
 		List<Long> commentIdList = new ArrayList<>();

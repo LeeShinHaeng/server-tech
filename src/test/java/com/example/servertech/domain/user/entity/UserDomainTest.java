@@ -36,7 +36,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("createNormal 은 새로운 User 객체를 생성합니다.")
+	@DisplayName("createNormal 은 새로운 User 객체를 생성한다.")
 	void createNormal_Success() {
 		// when
 		User created = User.createNormal(NAME, EMAIL, ENCODED_PASSWORD);
@@ -50,7 +50,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("createAdmin 은 ADMIN 역할의 User 객체를 생성합니다.")
+	@DisplayName("createAdmin 은 ADMIN 역할의 User 객체를 생성한다.")
 	void createAdmin_Success() {
 		// when
 		User newUser = User.createAdmin(NAME, EMAIL, ENCODED_PASSWORD);
@@ -64,7 +64,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("updateName 은 User 의 이름을 변경합니다.")
+	@DisplayName("updateName 은 User 의 이름을 변경한다.")
 	void updateName_Success() {
 		//given
 		String newName = "홍길동";
@@ -77,7 +77,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("updateEmail 은 User 의 이메일을 변경합니다.")
+	@DisplayName("updateEmail 은 User 의 이메일을 변경한다.")
 	void updateEmail_Success() {
 		//given
 		String newEmail = "new@example.com";
@@ -90,7 +90,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("updatePassword 은 User 의 비밀번호를 변경합니다.")
+	@DisplayName("updatePassword 은 User 의 비밀번호를 변경한다.")
 	void updatePassword_Success() {
 		//given
 		String newPassword = encoder.encode("new-password");
@@ -103,7 +103,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("isPasswordMatch 은 User 의 비밀번호가 맞으면 true 를 반환합니다.")
+	@DisplayName("isPasswordMatch 은 User 의 비밀번호가 맞으면 true 를 반환한다.")
 	void isPasswordMatch_True() {
 		// when
 		boolean isMatch = user.isPasswordMatch("password", encoder);
@@ -113,7 +113,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("isPasswordMatch 은 User 의 비밀번호가 아니면 false 를 반환합니다.")
+	@DisplayName("isPasswordMatch 은 User 의 비밀번호가 아니면 false 를 반환한다.")
 	void isPasswordMatch_False() {
 		//given
 		String newPassword = "not-password";
@@ -126,7 +126,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("getAuthorities 은 User 의 role 을 GrantedAuthority 로 반환합니다.")
+	@DisplayName("getAuthorities 은 User 의 role 을 GrantedAuthority 로 반환한다.")
 	void getAuthorities_Success() {
 		// when
 		Collection<? extends GrantedAuthority> authorities = user.getAuthorities().stream().toList();
@@ -137,7 +137,7 @@ class UserDomainTest {
 	}
 
 	@Test
-	@DisplayName("getUsername 은 User 의 id 를 반환합니다.")
+	@DisplayName("getUsername 은 User 의 id 를 반환한다.")
 	void getUsername_Success() {
 		// when
 		String username = user.getUsername();

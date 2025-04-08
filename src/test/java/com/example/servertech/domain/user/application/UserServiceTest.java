@@ -12,8 +12,8 @@ import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
 import com.example.servertech.domain.user.presentation.response.TokenResponse;
 import com.example.servertech.domain.user.presentation.response.UserDetailResponse;
 import com.example.servertech.domain.user.presentation.response.UserPersistResponse;
-import com.example.servertech.mock.repository.FakeUserRepository;
 import com.example.servertech.domain.user.repository.UserRepository;
+import com.example.servertech.mock.repository.FakeUserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,7 +66,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("register 는 새로운 User 를 저장합니다.")
+	@DisplayName("register 는 새로운 User 를 저장한다.")
 	void register_Success() {
 		// given
 		String EMAIL = "user2@example.com";
@@ -85,7 +85,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("login 은 정확하게 입력하면 AccessToken 을 생성합니다.")
+	@DisplayName("login 은 정확하게 입력하면 AccessToken 을 생성한다.")
 	void login_Success() {
 		// given
 		UserLoginRequest request = UserLoginRequest.builder()
@@ -101,7 +101,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("login 은 존재하지 않는 이메일을 입력하면 NoSuchEmailException 을 반환합니다.")
+	@DisplayName("login 은 존재하지 않는 이메일을 입력하면 NoSuchEmailException 을 반환한다.")
 	void login_throw_NoSuchEmailException() {
 		// given
 		UserLoginRequest request = UserLoginRequest.builder()
@@ -116,7 +116,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("login 은 존재하지 않는 이메일을 입력하면 InvalidPasswordException 을 반환합니다.")
+	@DisplayName("login 은 존재하지 않는 이메일을 입력하면 InvalidPasswordException 을 반환한다.")
 	void login_throw_InvalidPasswordException() {
 		// given
 		UserLoginRequest request = UserLoginRequest.builder()
@@ -131,7 +131,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("update 는 User 의 정보를 변경합니다.")
+	@DisplayName("update 는 User 의 정보를 변경한다.")
 	void update_Success() {
 		// given
 		String NAME = "홍길동";
@@ -156,7 +156,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("delete 는 User 의 deletedAt 을 현재로 변경합니다.")
+	@DisplayName("delete 는 User 의 deletedAt 을 현재로 변경한다.")
 	void delete_Success() {
 		// given
 		// when
@@ -168,7 +168,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("mypage 는 현재 로그인 한 User 를 UserDetailResponse 로 반환합니다.")
+	@DisplayName("mypage 는 현재 로그인 한 User 를 UserDetailResponse 로 반환한다.")
 	void mypage_Success() {
 		// when
 		UserDetailResponse response = userService.mypage();
@@ -181,7 +181,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("me 는 현재 로그인 한 User 를 반환합니다.")
+	@DisplayName("me 는 현재 로그인 한 User 를 반환한다.")
 	void me_Success() {
 		// when
 		User me = userService.me();
@@ -193,7 +193,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("me 는 현재 로그인 한 User 가 없을 경우 NotLoginException 를 반환합니다.")
+	@DisplayName("me 는 현재 로그인 한 User 가 없을 경우 NotLoginException 를 반환한다.")
 	void me_throw_NotLoginException() {
 		// given
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -206,7 +206,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("getAuthenticatedUser 는 현재 로그인 한 User 를 Optional로 반환합니다.")
+	@DisplayName("getAuthenticatedUser 는 현재 로그인 한 User 를 Optional 로 반환한다.")
 	void getAuthenticatedUser_Success() {
 		// when
 		Optional<User> optionalUser = userService.getAuthenticatedUser();
@@ -219,7 +219,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("getAuthenticatedUser 는 현재 로그인 한 User 가 없을 경우 Null 로 반환합니다.")
+	@DisplayName("getAuthenticatedUser 는 현재 로그인 한 User 가 없을 경우 Null 로 반환한다.")
 	void getAuthenticatedUser_Null() {
 		// given
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -233,7 +233,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("getUserById 는 아이디로 User 를 조회합니다.")
+	@DisplayName("getUserById 는 아이디로 User 를 조회한다.")
 	void getUserById_Success() {
 		// given
 		// when
