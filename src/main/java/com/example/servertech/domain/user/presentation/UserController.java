@@ -61,4 +61,10 @@ public interface UserController {
 		content = @Content(schema = @Schema(implementation = UserPersistResponse.class))
 	)
 	ResponseEntity<UserPersistResponse> adminRegister(UserCreateRequest request);
+
+	@Operation(summary = "강제 탈퇴 API", description = """
+			- Description : 이 API는 관리자 전용으로 회원을 탈퇴시킵니다.
+		""")
+	@ApiResponse(responseCode = "204")
+	ResponseEntity<Void> blockUser(Long id);
 }
