@@ -52,4 +52,13 @@ public interface UserController {
 		content = @Content(schema = @Schema(implementation = UserDetailResponse.class))
 	)
 	ResponseEntity<UserDetailResponse> me();
+
+	@Operation(summary = "관리자 회원 가입 API", description = """
+			- Description : 이 API는 새로운 관리자를 생성 합니다.
+		""")
+	@ApiResponse(
+		responseCode = "201",
+		content = @Content(schema = @Schema(implementation = UserPersistResponse.class))
+	)
+	ResponseEntity<UserPersistResponse> adminRegister(UserCreateRequest request);
 }

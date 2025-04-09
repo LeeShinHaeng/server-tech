@@ -58,4 +58,11 @@ public class UserControllerImpl implements UserController {
 		UserDetailResponse response = userService.mypage();
 		return ResponseEntity.ok(response);
 	}
+
+	@Override
+	@PostMapping("/admin-register")
+	public ResponseEntity<UserPersistResponse> adminRegister(UserCreateRequest request) {
+		UserPersistResponse response = userService.adminRegister(request);
+		return ResponseEntity.status(CREATED).body(response);
+	}
 }

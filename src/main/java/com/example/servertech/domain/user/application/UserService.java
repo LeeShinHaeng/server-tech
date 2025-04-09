@@ -33,8 +33,7 @@ public class UserService {
 	@Transactional
 	public UserPersistResponse register(UserCreateRequest request) {
 		String encode = passwordEncoder.encode(request.password());
-		User user = User.createNormal(request.name(), request.email(), encode);
-		User save = userRepository.save(user);
+		User save = userRepository.save(User.createNormal(request.name(), request.email(), encode));
 		return UserPersistResponse.of(save.getId());
 	}
 
@@ -98,5 +97,12 @@ public class UserService {
 	public User getUserById(Long id) {
 		return userRepository.findById(id)
 			.orElseThrow(NoSuchUserException::new);
+	}
+
+	@Transactional
+	public UserPersistResponse adminRegister(UserCreateRequest request) {
+		String encode = passwordEncoder.encode(request.password());
+		User save = userRepository.save(User.createAdmin(request.name(), request.email(), encode));
+		return UserPersistResponse.of(save.getId());
 	}
 }

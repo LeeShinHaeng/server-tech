@@ -25,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
+import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -244,5 +245,26 @@ class UserServiceTest {
 		assertEquals(user.getId(), result.getId());
 		assertEquals(user.getName(), result.getName());
 		assertEquals(user.getEmail(), result.getEmail());
+	}
+
+	@Test
+	@DisplayName("adminRegister 는 새로운 Admin User 를 저장한다.")
+	void adminRegister_Success() {
+		// given
+		String EMAIL = "user2@example.com";
+		UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+			.name(NAME)
+			.email(EMAIL)
+			.password(RAW_PASSWORD)
+			.build();
+
+		// when
+		UserPersistResponse registered = userService.adminRegister(userCreateRequest);
+
+		// then
+		assertNotNull(registered);
+		assertEquals(2L, registered.id());
+		User admin = userService.getUserById(2L);
+		assertEquals(ADMIN, admin.getRole());
 	}
 }
