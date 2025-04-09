@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -60,11 +62,7 @@ public class PostService {
 	@Transactional
 	public void update(Long id, PostCreateRequest request) {
 		Post post = findPostById(id);
-
-		if (!post.getWriter().getId().equals(userService.me().getId())) {
-			throw new WriterNotMatchException();
-		}
-
+		checkAuth(post);
 		post.updateTitle(request.title());
 		post.updateContent(request.content());
 	}
@@ -72,14 +70,17 @@ public class PostService {
 	@Transactional
 	public void delete(Long id) {
 		Post post = findPostById(id);
-
-		if (!post.getWriter().getId().equals(userService.me().getId())) {
-			throw new WriterNotMatchException();
-		}
-
+		checkAuth(post);
 		post.delete();
 	}
 
+	public void checkAuth(Post post) {
+		User me = userService.me();
+		if (!post.getWriter().getId().equals(me.getId()) && me.getRole() != ADMIN)
+			throw new WriterNotMatchException();
+	}
+
+	@Transactional(readOnly = true)
 	public Post findPostById(Long id) {
 		return postRepository.findById(id)
 			.orElseThrow(NoSuchPostException::new);

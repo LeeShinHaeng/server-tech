@@ -29,7 +29,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
+import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -246,5 +248,49 @@ class PostServiceTest {
 
 		// then
 		assertEquals(Optional.empty(), postLike);
+	}
+
+	@Test
+	@DisplayName("checkAuth 은 post 에 접근 권한이 있는 회원인지 확인한다.")
+	void checkAuth_Success() {
+		// when
+		// then
+		assertThatNoException().isThrownBy(() -> postService.checkAuth(post));
+
+		// when
+		User user = userRepository.save(
+			User.builder()
+				.id(2L)
+				.role(ADMIN)
+				.build()
+		);
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+			new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+		);
+
+		// then
+		assertThatNoException().isThrownBy(() -> postService.checkAuth(post));
+	}
+
+
+	@Test
+	@DisplayName("checkAuth 은 post 에 접근 권한이 없는 회원의 경우 WriterNotMatchException 를 반환한다.")
+	void checkAuth_throw_WriterNotMatchException() {
+		// when
+		User user = userRepository.save(
+			User.builder()
+				.id(2L)
+				.role(NORMAL)
+				.build()
+		);
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+			new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+		);
+
+		// then
+		assertThatThrownBy(() -> postService.checkAuth(post))
+			.isInstanceOf(WriterNotMatchException.class);
 	}
 }

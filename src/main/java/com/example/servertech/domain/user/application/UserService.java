@@ -2,6 +2,7 @@ package com.example.servertech.domain.user.application;
 
 import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.domain.user.entity.User;
+import com.example.servertech.domain.user.exception.AuthenticationException;
 import com.example.servertech.domain.user.exception.AuthorizationException;
 import com.example.servertech.domain.user.exception.InvalidPasswordException;
 import com.example.servertech.domain.user.exception.NoSuchEmailException;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -33,8 +36,7 @@ public class UserService {
 	@Transactional
 	public UserPersistResponse register(UserCreateRequest request) {
 		String encode = passwordEncoder.encode(request.password());
-		User user = User.createNormal(request.name(), request.email(), encode);
-		User save = userRepository.save(user);
+		User save = userRepository.save(User.createNormal(request.name(), request.email(), encode));
 		return UserPersistResponse.of(save.getId());
 	}
 
@@ -82,7 +84,7 @@ public class UserService {
 		String username = ((UserDetails) authentication.getPrincipal()).getUsername();
 
 		return userRepository.findById(Long.parseLong(username))
-			.orElseThrow(AuthorizationException::new);
+			.orElseThrow(AuthenticationException::new);
 	}
 
 	@Transactional(readOnly = true)
@@ -98,5 +100,21 @@ public class UserService {
 	public User getUserById(Long id) {
 		return userRepository.findById(id)
 			.orElseThrow(NoSuchUserException::new);
+	}
+
+	@Transactional
+	public UserPersistResponse adminRegister(UserCreateRequest request) {
+		String encode = passwordEncoder.encode(request.password());
+		User save = userRepository.save(User.createAdmin(request.name(), request.email(), encode));
+		return UserPersistResponse.of(save.getId());
+	}
+
+	@Transactional
+	public void blockUser(Long userId) {
+		User me = me();
+		if (me.getRole() != ADMIN) throw new AuthorizationException();
+
+		User blocked = getUserById(userId);
+		blocked.delete();
 	}
 }

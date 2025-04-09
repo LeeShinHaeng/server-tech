@@ -14,7 +14,8 @@ public enum UserExceptionCode implements ExceptionCode {
 	NO_SUCH_USER(BAD_REQUEST, "해당 아이디의 사용자가 존재하지 않습니다"),
 	INVALID_PASSWORD(BAD_REQUEST, "비밀번호가 일치하지 않습니다"),
 	NOT_LOGIN(BAD_REQUEST, "로그인이 확인되지 않습니다"),
-	AUTHORIZATION(BAD_REQUEST, "인증과정 중 에러가 발생했습니다"),
+	AUTHENTICATION(BAD_REQUEST, "인증과정 중 에러가 발생했습니다"),
+	AUTHORIZATION(BAD_REQUEST, "허용되지 않은 역할의 사용자입니다"),
 	;
 
 	private final HttpStatus status;

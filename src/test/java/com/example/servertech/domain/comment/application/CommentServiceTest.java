@@ -5,6 +5,7 @@ import com.example.servertech.auth.jwt.JwtProperties;
 import com.example.servertech.auth.jwt.JwtProvider;
 import com.example.servertech.domain.comment.entity.Comment;
 import com.example.servertech.domain.comment.entity.CommentLike;
+import com.example.servertech.domain.comment.exception.NoSuchCommentException;
 import com.example.servertech.domain.comment.exception.WriterNotMatchException;
 import com.example.servertech.domain.comment.presentation.request.CommentCreateRequest;
 import com.example.servertech.domain.comment.presentation.response.CommentListResponse;
@@ -35,7 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -198,6 +201,29 @@ class CommentServiceTest {
 	}
 
 	@Test
+	@DisplayName("getComment 는 Comment 객체를 아이디로 조회한다.")
+	void getComment_Success() {
+		// when
+		Comment found = commentService.getComment(1L);
+
+		// then
+		assertNotNull(found);
+		assertEquals(1L, found.getId());
+		assertEquals(user, found.getWriter());
+		assertEquals(post, found.getPost());
+		assertEquals(CONTENT, found.getContent());
+	}
+
+	@Test
+	@DisplayName("getComment 는 없는 아이디로 조회하면 NoSuchCommentException 을 반환한다.")
+	void getComment_throw_NoSuchCommentException() {
+		// when
+		// then
+		assertThatThrownBy(() -> commentService.getComment(2L))
+			.isInstanceOf(NoSuchCommentException.class);
+	}
+
+	@Test
 	@DisplayName("like 는 CommentLike 객체를 생성한다.")
 	void like() {
 		// given
@@ -231,5 +257,50 @@ class CommentServiceTest {
 		// then
 		assertNotNull(response);
 		assertEquals(0, response.size());
+	}
+
+
+	@Test
+	@DisplayName("checkAuth 은 comment 에 접근 권한이 있는 회원인지 확인한다.")
+	void checkAuth_Success() {
+		// when
+		// then
+		assertThatNoException().isThrownBy(() -> commentService.checkAuth(comment));
+
+		// when
+		User user = userRepository.save(
+			User.builder()
+				.id(2L)
+				.role(ADMIN)
+				.build()
+		);
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+			new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+		);
+
+		// then
+		assertThatNoException().isThrownBy(() -> commentService.checkAuth(comment));
+	}
+
+
+	@Test
+	@DisplayName("checkAuth 은 post 에 접근 권한이 없는 회원의 경우 WriterNotMatchException 를 반환한다.")
+	void checkAuth_throw_WriterNotMatchException() {
+		// when
+		User user = userRepository.save(
+			User.builder()
+				.id(2L)
+				.role(NORMAL)
+				.build()
+		);
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+			new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+		);
+
+		// then
+		assertThatThrownBy(() -> commentService.checkAuth(comment))
+			.isInstanceOf(WriterNotMatchException.class);
 	}
 }
