@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -74,29 +76,26 @@ public class CommentService {
 
 	@Transactional
 	public void update(Long id, CommentCreateRequest request) {
-		User me = userService.me();
 		Comment comment = getComment(id);
-
-		if (!comment.getWriter().getId().equals(me.getId())) {
-			throw new WriterNotMatchException();
-		}
-
+		checkAuth(comment);
 		comment.updateContent(request.content());
 	}
 
 	@Transactional
 	public void delete(Long id) {
-		User me = userService.me();
 		Comment comment = getComment(id);
-
-		if (!comment.getWriter().getId().equals(me.getId())) {
-			throw new WriterNotMatchException();
-		}
-
+		checkAuth(comment);
 		comment.delete();
 	}
 
-	private Comment getComment(Long id) {
+	public void checkAuth(Comment comment) {
+		User me = userService.me();
+		if (!comment.getWriter().getId().equals(me.getId()) && me.getRole() != ADMIN)
+			throw new WriterNotMatchException();
+	}
+
+	@Transactional(readOnly = true)
+	public Comment getComment(Long id) {
 		return commentRepository.findById(id)
 			.orElseThrow(NoSuchCommentException::new);
 	}

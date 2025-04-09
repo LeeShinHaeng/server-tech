@@ -2,7 +2,6 @@ package com.example.servertech.domain.user.application;
 
 import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.domain.user.entity.User;
-import com.example.servertech.domain.user.entity.UserRole;
 import com.example.servertech.domain.user.exception.AuthenticationException;
 import com.example.servertech.domain.user.exception.AuthorizationException;
 import com.example.servertech.domain.user.exception.InvalidPasswordException;
