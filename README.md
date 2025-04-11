@@ -39,5 +39,24 @@
 ## 추가 설정
 - profile
     - local
-- 환경 변수
-    - JWT_KEY=Any_value_encoded_by_BASE64_is_possibles
+- 환경 변수 (**BOLD**로 표시된 부분은 필수로 설정)
+    - DB 설정
+      - DB_HOST=location_of_DB (localhost)
+      - DB_PORT=port_number_of_DB_process (5432)
+      - DB_NAME=name_of_database
+    - JWT 설정
+      - JWT_ISSUER=any_value_can_represent_you (example@email.com)
+      - **JWT_KEY=any_value_encoded_by_BASE64_is_possibles**
+
+## redis 브랜치
+### 브랜치 설명
+
+Redis Stream을 적용해서 Event를 다룹니다.
+
+common.event에 관련 내용을 추가했습니다.
+
+service 계층의 비즈니스 로직에서 이벤트를 발생시켜 알림 객체를 생성하도록 만들었습니다. 
+
+### 환경 변수 설정
+- REDIS_HOST=location_of_redis (localhost)
+- REDIS_PORT=port_number_of_redis_process (6379)
