@@ -19,7 +19,7 @@ import java.util.Optional;
 public class EventProducerImpl implements EventProducer {
 	private final StringRedisTemplate redisTemplate;
 	private final ObjectMapper objectMapper;
-	private final RedisProperties properties;
+	private final RedisProperties redisProperties;
 
 	@Override
 	public void publish(CommonEvent event) {
@@ -27,7 +27,7 @@ public class EventProducerImpl implements EventProducer {
 			String jsonValue = objectMapper.writeValueAsString(event);
 
 			ObjectRecord<String, String> record = StreamRecords.newRecord()
-				.in(properties.getStreamKey())
+				.in(redisProperties.getStreamKey())
 				.ofObject(jsonValue);
 			RecordId recordId = redisTemplate.opsForStream().add(record);
 
