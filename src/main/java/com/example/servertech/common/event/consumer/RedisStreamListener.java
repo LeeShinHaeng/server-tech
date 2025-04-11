@@ -26,7 +26,7 @@ public class RedisStreamListener implements StreamListener<String, ObjectRecord<
 		try {
 			String record = String.valueOf(message.getId());
 			CommonEvent event = objectMapper.readValue(message.getValue(), CommonEvent.class);
-			NotificationRequest request = NotificationRequest.create(record, event.eventType(), event.senderId());
+			NotificationRequest request = NotificationRequest.create(record, event.eventType(), event.targetId());
 			notificationService.save(request);
 
 			redisTemplate.opsForStream().trim(redisProperties.getStreamKey(), 1000);
