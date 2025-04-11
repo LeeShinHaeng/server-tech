@@ -1,5 +1,7 @@
 package com.example.servertech.domain.comment.application;
 
+import com.example.servertech.common.event.domain.CommonEvent;
+import com.example.servertech.common.event.producer.EventProducer;
 import com.example.servertech.domain.comment.entity.Comment;
 import com.example.servertech.domain.comment.entity.CommentLike;
 import com.example.servertech.domain.comment.exception.NoSuchCommentException;
@@ -23,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.servertech.common.event.domain.EventType.COMMENT_LIKE;
+import static com.example.servertech.common.event.domain.EventType.POST_COMMENTED;
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 
 @Service
@@ -32,6 +36,7 @@ public class CommentService {
 	private final PostService postService;
 	private final CommentRepository commentRepository;
 	private final CommentLikeRepository commentLikeRepository;
+	private final EventProducer eventProducer;
 
 	@Transactional
 	public CommentPersistResponse create(Long postId, CommentCreateRequest request) {
@@ -40,6 +45,10 @@ public class CommentService {
 		Comment save = commentRepository.save(
 			Comment.create(post, me, request.content())
 		);
+		eventProducer.publish(
+			CommonEvent.create(post.getWriter().getId(), POST_COMMENTED)
+		);
+
 		return new CommentPersistResponse(save.getId());
 	}
 
@@ -102,11 +111,12 @@ public class CommentService {
 
 	@Transactional
 	public void like(Long commentId) {
+		Comment comment = getComment(commentId);
 		commentLikeRepository.save(
-			CommentLike.create(
-				getComment(commentId),
-				userService.me()
-			)
+			CommentLike.create(comment, userService.me())
+		);
+		eventProducer.publish(
+			CommonEvent.create(comment.getWriter().getId(), COMMENT_LIKE)
 		);
 	}
 

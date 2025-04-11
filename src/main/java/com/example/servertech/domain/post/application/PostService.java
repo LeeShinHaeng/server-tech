@@ -1,5 +1,7 @@
 package com.example.servertech.domain.post.application;
 
+import com.example.servertech.common.event.domain.CommonEvent;
+import com.example.servertech.common.event.producer.EventProducer;
 import com.example.servertech.domain.post.entity.Post;
 import com.example.servertech.domain.post.entity.PostLike;
 import com.example.servertech.domain.post.exception.NoSuchPostException;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.servertech.common.event.domain.EventType.POST_LIKE;
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 
 @Service
@@ -26,6 +29,7 @@ public class PostService {
 	private final UserService userService;
 	private final PostRepository postRepository;
 	private final PostLikeRepository postLikeRepository;
+	private final EventProducer eventProducer;
 
 	@Transactional
 	public PostPersistResponse create(PostCreateRequest request) {
@@ -88,11 +92,12 @@ public class PostService {
 
 	@Transactional
 	public void like(Long id) {
+		Post post = findPostById(id);
 		postLikeRepository.save(
-			PostLike.create(
-				findPostById(id),
-				userService.me()
-			)
+			PostLike.create(post, userService.me())
+		);
+		eventProducer.publish(
+			CommonEvent.create(post.getWriter().getId(), POST_LIKE)
 		);
 	}
 

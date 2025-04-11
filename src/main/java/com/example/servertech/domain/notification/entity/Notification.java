@@ -1,6 +1,7 @@
 package com.example.servertech.domain.notification.entity;
 
 
+import com.example.servertech.common.event.domain.EventType;
 import com.example.servertech.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +41,7 @@ public class Notification {
 
 	@Enumerated(value = STRING)
 	@Column(nullable = false, updatable = false)
-	private NotificationType type;
+	private EventType type;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "receiver_id", nullable = false, updatable = false)
@@ -53,7 +54,7 @@ public class Notification {
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createTime;
 
-	public static Notification create(String title, String content, NotificationType type, User receiver) {
+	public static Notification create(String title, String content, EventType type, User receiver) {
 		return Notification.builder()
 			.title(title)
 			.content(content)

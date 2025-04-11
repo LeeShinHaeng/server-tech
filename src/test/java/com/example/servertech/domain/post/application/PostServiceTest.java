@@ -3,6 +3,7 @@ package com.example.servertech.domain.post.application;
 import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.auth.jwt.JwtProperties;
 import com.example.servertech.auth.jwt.JwtProvider;
+import com.example.servertech.common.event.producer.EventProducer;
 import com.example.servertech.domain.post.entity.Post;
 import com.example.servertech.domain.post.entity.PostLike;
 import com.example.servertech.domain.post.exception.NoSuchPostException;
@@ -16,6 +17,7 @@ import com.example.servertech.domain.post.repository.PostRepository;
 import com.example.servertech.domain.user.application.UserService;
 import com.example.servertech.domain.user.entity.User;
 import com.example.servertech.domain.user.repository.UserRepository;
+import com.example.servertech.mock.event.FakeEventProducer;
 import com.example.servertech.mock.repository.FakePostLikeRepository;
 import com.example.servertech.mock.repository.FakePostRepository;
 import com.example.servertech.mock.repository.FakeUserRepository;
@@ -56,15 +58,16 @@ class PostServiceTest {
 
 		postRepository = new FakePostRepository();
 		postLikeRepository = new FakePostLikeRepository();
-
 		userRepository = new FakeUserRepository();
+		EventProducer eventProducer = new FakeEventProducer();
+
 		JwtProperties jwtProperties = new JwtProperties("testIssuer", "testSecretKey");
 		JwtProvider jwtProvider = new JwtProvider(jwtProperties);
 		AuthService authService = new AuthService(jwtProvider);
 
 		UserService userService = new UserService(authService, userRepository, encoder);
 
-		postService = new PostService(userService, postRepository, postLikeRepository);
+		postService = new PostService(userService, postRepository, postLikeRepository, eventProducer);
 
 		User user = userRepository.save(
 			User.builder()
