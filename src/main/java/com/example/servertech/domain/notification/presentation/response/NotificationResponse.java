@@ -1,7 +1,7 @@
 package com.example.servertech.domain.notification.presentation.response;
 
 import com.example.servertech.domain.notification.entity.Notification;
-import com.example.servertech.domain.notification.entity.NotificationType;
+import com.example.servertech.common.event.domain.EventType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -18,7 +18,7 @@ public record NotificationResponse(
 	String title,
 
 	@Schema(description = "알림 타입", example = "POST_COMMENTED", requiredMode = REQUIRED)
-	NotificationType type,
+	EventType type,
 
 	@Schema(description = "알림 생성 시간", example = "2025-04-07T09:27:01.184843", requiredMode = REQUIRED)
 	LocalDateTime createTime

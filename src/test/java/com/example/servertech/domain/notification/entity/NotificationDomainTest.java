@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 
-import static com.example.servertech.domain.notification.entity.NotificationType.COMMENT_LIKE;
+import static com.example.servertech.common.event.domain.EventType.COMMENT_LIKE;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
