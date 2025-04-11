@@ -27,7 +27,7 @@ public class EventProducerImpl implements EventProducer {
 			String jsonValue = objectMapper.writeValueAsString(event);
 
 			ObjectRecord<String, String> record = StreamRecords.newRecord()
-				.in(properties.getSTREAM_KEY())
+				.in(properties.getStreamKey())
 				.ofObject(jsonValue);
 			RecordId recordId = redisTemplate.opsForStream().add(record);
 

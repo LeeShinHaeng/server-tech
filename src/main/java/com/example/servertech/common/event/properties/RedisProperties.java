@@ -13,5 +13,5 @@ import org.springframework.stereotype.Component;
 public class RedisProperties {
 	private String host;
 	private Integer port;
-	private final String STREAM_KEY = "notification-stream";
+	private final String streamKey = "notification-stream";
 }
