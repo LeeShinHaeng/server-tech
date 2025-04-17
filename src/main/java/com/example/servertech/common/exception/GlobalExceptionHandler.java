@@ -3,7 +3,6 @@ package com.example.servertech.common.exception;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -27,25 +26,19 @@ import static com.example.servertech.common.exception.GlobalExceptionCode.SERVER
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-	private final ApplicationEventPublisher eventPublisher;
-
 	@ExceptionHandler(CustomException.class)
 	protected ResponseEntity<ExceptionResponse> handleCustomException(CustomException exception) {
-		if (exception.isServerError())
-			eventPublisher.publishEvent(exception);
 		ExceptionResponse response = ExceptionResponse.from(exception);
 		return ResponseEntity.status(response.status()).body(response);
 	}
 
 	@ExceptionHandler(Exception.class)
-	protected ResponseEntity<ExceptionResponse> handleException(Exception exception) {
-		eventPublisher.publishEvent(exception);
+	protected ResponseEntity<ExceptionResponse> handleException() {
 		return ResponseEntity.internalServerError().body(ExceptionResponse.from(SERVER_ERROR));
 	}
 
 	@ExceptionHandler(AuthorizationDeniedException.class)
-	protected ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthorizationDeniedException exception) {
-		eventPublisher.publishEvent(exception);
+	protected ResponseEntity<ExceptionResponse> handleAuthenticationException() {
 		ExceptionResponse response = ExceptionResponse.from(FORBIDDEN);
 		return ResponseEntity.status(response.status()).body(response);
 	}
