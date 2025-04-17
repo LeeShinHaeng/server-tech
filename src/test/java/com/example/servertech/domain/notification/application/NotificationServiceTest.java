@@ -4,7 +4,7 @@ import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.auth.jwt.JwtProperties;
 import com.example.servertech.auth.jwt.JwtProvider;
 import com.example.servertech.domain.notification.entity.Notification;
-import com.example.servertech.domain.notification.entity.NotificationType;
+import com.example.servertech.common.event.domain.EventType;
 import com.example.servertech.domain.notification.exception.NoSuchNotificationException;
 import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
 import com.example.servertech.domain.notification.presentation.response.NotificationDetailResponse;
@@ -23,7 +23,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static com.example.servertech.domain.notification.entity.NotificationType.COMMENT_LIKE;
+import static com.example.servertech.common.event.domain.EventType.COMMENT_LIKE;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,7 +60,7 @@ class NotificationServiceTest {
 		);
 
 		notificationRepository.save(
-			Notification.create(COMMENT_LIKE.getDescription(), CONTENT, NotificationType.COMMENT_LIKE, user)
+			Notification.create(COMMENT_LIKE.getDescription(), CONTENT, EventType.COMMENT_LIKE, user)
 		);
 	}
 

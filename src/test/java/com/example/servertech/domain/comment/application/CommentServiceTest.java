@@ -3,6 +3,7 @@ package com.example.servertech.domain.comment.application;
 import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.auth.jwt.JwtProperties;
 import com.example.servertech.auth.jwt.JwtProvider;
+import com.example.servertech.common.event.producer.EventProducer;
 import com.example.servertech.domain.comment.entity.Comment;
 import com.example.servertech.domain.comment.entity.CommentLike;
 import com.example.servertech.domain.comment.exception.NoSuchCommentException;
@@ -19,6 +20,7 @@ import com.example.servertech.domain.post.repository.PostRepository;
 import com.example.servertech.domain.user.application.UserService;
 import com.example.servertech.domain.user.entity.User;
 import com.example.servertech.domain.user.repository.UserRepository;
+import com.example.servertech.mock.event.FakeEventProducer;
 import com.example.servertech.mock.repository.FakeCommentLikeRepository;
 import com.example.servertech.mock.repository.FakeCommentRepository;
 import com.example.servertech.mock.repository.FakePostLikeRepository;
@@ -63,15 +65,17 @@ class CommentServiceTest {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		PostRepository postRepository = new FakePostRepository();
 		PostLikeRepository postLikeRepository = new FakePostLikeRepository();
+		EventProducer eventProducer = new FakeEventProducer();
 
 		userRepository = new FakeUserRepository();
 		JwtProperties jwtProperties = new JwtProperties("testIssuer", "testSecretKey");
 		JwtProvider jwtProvider = new JwtProvider(jwtProperties);
 		AuthService authService = new AuthService(jwtProvider);
 		UserService userService = new UserService(authService, userRepository, encoder);
-		PostService postService = new PostService(userService, postRepository, postLikeRepository);
+		PostService postService = new PostService(userService, postRepository, postLikeRepository, eventProducer);
 
-		commentService = new CommentService(userService, postService, commentRepository, commentLikeRepository);
+		commentService = new CommentService(userService, postService, commentRepository,
+			commentLikeRepository, eventProducer);
 
 		user = userRepository.save(
 			User.builder()
