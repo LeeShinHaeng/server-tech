@@ -33,12 +33,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(Exception.class)
-	protected ResponseEntity<ExceptionResponse> handleException(Exception exception) {
+	protected ResponseEntity<ExceptionResponse> handleException() {
 		return ResponseEntity.internalServerError().body(ExceptionResponse.from(SERVER_ERROR));
 	}
 
 	@ExceptionHandler(AuthorizationDeniedException.class)
-	protected ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthorizationDeniedException exception) {
+	protected ResponseEntity<ExceptionResponse> handleAuthenticationException() {
 		ExceptionResponse response = ExceptionResponse.from(FORBIDDEN);
 		return ResponseEntity.status(response.status()).body(response);
 	}
