@@ -22,33 +22,29 @@ public class ExceptionLoggingAspect {
 	}
 
 	@AfterThrowing(value = "logPointcut()", throwing = "ex")
-	public void logAfterThrowing(JoinPoint joinPoint, CustomException ex) {
-		List<String> arguments = getArguments(joinPoint);
-		String parameterMessage = getParameterMessage(arguments);
-
-		log.warn("[EXCEPTION] CODE : {} || ARGUMENTS : {}", ex.getCode().getCode(), parameterMessage);
+	public void logAfterThrowingCustomException(JoinPoint joinPoint, CustomException ex) {
+		log.warn("[EXCEPTION] CODE : {} || ARGUMENTS : {}", ex.getCode().getCode(), getArguments(joinPoint));
 		log.warn("[EXCEPTION] FINAL POINT : {}", ex.getStackTrace()[0]);
 		log.warn("[EXCEPTION] MESSAGE : {}", ex.getMessage());
-		log.warn("");
+		log.warn("----");
 	}
 
 	@AfterThrowing(value = "logPointcut()", throwing = "ex")
-	public void logAfterThrowing(JoinPoint joinPoint, Exception ex) {
+	public void logAfterThrowingException(JoinPoint joinPoint, Exception ex) {
 		if (ex instanceof CustomException) return;
 
-		List<String> arguments = getArguments(joinPoint);
-		String parameterMessage = getParameterMessage(arguments);
-
-		log.error("[SERVER-ERROR] ARGUMENTS : {}", parameterMessage);
-		log.error("[SERVER-ERROR] FINAL POINT : {}", ex.getStackTrace()[0]);
-		log.error("[SERVER-ERROR] MESSAGE : {}", ex.getMessage());
-		log.error("");
+		log.error("[ERROR] ARGUMENTS : {}", getArguments(joinPoint));
+		log.error("[ERROR] FINAL POINT : {}", ex.getStackTrace()[0]);
+		log.error("[ERROR] MESSAGE : {}", ex.getMessage());
+		log.error("----");
 	}
 
-	private List<String> getArguments(JoinPoint joinPoint) {
-		return Arrays.stream(joinPoint.getArgs())
+	private String getArguments(JoinPoint joinPoint) {
+		List<String> fields = Arrays.stream(joinPoint.getArgs())
 			.map(ExceptionLoggingAspect::getObjectFields)
 			.toList();
+
+		return toJoinStringWithFormat(fields);
 	}
 
 	private static String getObjectFields(Object obj) {
@@ -63,7 +59,7 @@ public class ExceptionLoggingAspect {
 				result.append(fields[i].getName()).append(" = ")
 					.append(fields[i].get(obj));
 			} catch (IllegalAccessException e) {
-				result.append(fields[i].getName()).append("=ACCESS_DENIED");
+				result.append(fields[i].getName()).append("= ACCESS_DENIED");
 			}
 			if (i < fields.length - 1) {
 				result.append(", ");
@@ -73,10 +69,9 @@ public class ExceptionLoggingAspect {
 		return result.toString();
 	}
 
-	private String getParameterMessage(List<String> arguments) {
-		if (arguments == null)
-			return "";
+	private String toJoinStringWithFormat(List<String> fields) {
+		if (fields == null) return "";
 
-		return String.join(" | ", arguments);
+		return String.join(" | ", fields);
 	}
 }
