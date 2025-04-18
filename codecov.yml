@@ -1,0 +1,24 @@
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: 10%
+        threshold: 5%
+        paths:
+          - "src"
+          - "src/test"
+        only_pulls: true
+    patch:
+      default:
+        target: 10%
+        threshold: 5%
+
+comment:
+  layout: "reach,diff,flags,files,footer"
+  behavior: default
+  require_changes: false
+  branches:
+    - develop
