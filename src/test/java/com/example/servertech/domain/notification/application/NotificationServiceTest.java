@@ -3,9 +3,10 @@ package com.example.servertech.domain.notification.application;
 import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.auth.jwt.JwtProperties;
 import com.example.servertech.auth.jwt.JwtProvider;
-import com.example.servertech.domain.notification.entity.Notification;
 import com.example.servertech.common.event.domain.EventType;
+import com.example.servertech.domain.notification.entity.Notification;
 import com.example.servertech.domain.notification.exception.NoSuchNotificationException;
+import com.example.servertech.domain.notification.exception.ReceiverNotMatchException;
 import com.example.servertech.domain.notification.presentation.request.NotificationRequest;
 import com.example.servertech.domain.notification.presentation.response.NotificationDetailResponse;
 import com.example.servertech.domain.notification.presentation.response.NotificationListResponse;
@@ -28,10 +29,12 @@ import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NotificationServiceTest {
 	private NotificationService notificationService;
 	private User user;
+	private User notReceiver;
 	private final String CONTENT = "테스트 내용";
 
 	@BeforeEach
@@ -50,6 +53,13 @@ class NotificationServiceTest {
 		user = userRepository.save(
 			User.builder()
 				.id(1L)
+				.role(NORMAL)
+				.build()
+		);
+
+		notReceiver = userRepository.save(
+			User.builder()
+				.id(2L)
 				.role(NORMAL)
 				.build()
 		);
@@ -101,6 +111,22 @@ class NotificationServiceTest {
 	}
 
 	@Test
+	@DisplayName("findByLoginUser 는 로그인 허지 않은 유저의 경우 빈 리스트를 반환한다.")
+	void findByLoginUser_EmptyResponse() {
+		// given
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(null);
+
+		// when
+		NotificationListResponse response = notificationService.findByLoginUser();
+
+		// then
+		assertNotNull(response);
+		assertEquals(0, response.size());
+		assertTrue(response.notificationResponseList().isEmpty());
+	}
+
+	@Test
 	@DisplayName("findById 는 해당 아이디로 알림을 조회한다.")
 	void findById_Success() {
 		// when
@@ -120,5 +146,20 @@ class NotificationServiceTest {
 		// then
 		assertThatThrownBy(() -> notificationService.findById(2L))
 			.isInstanceOf(NoSuchNotificationException.class);
+	}
+
+	@Test
+	@DisplayName("findById 는 다른 유저의 알림을 조회하면 ReceiverNotMatchException 을 반환한다.")
+	void findById_throw_ReceiverNotMatchException() {
+		// given
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+			new UsernamePasswordAuthenticationToken(notReceiver, notReceiver.getPassword(), notReceiver.getAuthorities())
+		);
+
+		// when
+		// then
+		assertThatThrownBy(() -> notificationService.findById(1L))
+			.isInstanceOf(ReceiverNotMatchException.class);
 	}
 }

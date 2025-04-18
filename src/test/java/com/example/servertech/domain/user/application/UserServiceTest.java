@@ -4,8 +4,10 @@ import com.example.servertech.auth.application.AuthService;
 import com.example.servertech.auth.jwt.JwtProperties;
 import com.example.servertech.auth.jwt.JwtProvider;
 import com.example.servertech.domain.user.entity.User;
+import com.example.servertech.domain.user.exception.AuthorizationException;
 import com.example.servertech.domain.user.exception.InvalidPasswordException;
 import com.example.servertech.domain.user.exception.NoSuchEmailException;
+import com.example.servertech.domain.user.exception.NoSuchUserException;
 import com.example.servertech.domain.user.exception.NotLoginException;
 import com.example.servertech.domain.user.presentation.request.UserCreateRequest;
 import com.example.servertech.domain.user.presentation.request.UserLoginRequest;
@@ -27,10 +29,12 @@ import java.util.Optional;
 
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserServiceTest {
@@ -112,7 +116,7 @@ class UserServiceTest {
 
 		// when
 		// then
-		Assertions.assertThatThrownBy(() -> userService.login(request))
+		assertThatThrownBy(() -> userService.login(request))
 			.isInstanceOf(NoSuchEmailException.class);
 	}
 
@@ -127,7 +131,7 @@ class UserServiceTest {
 
 		// when
 		// then
-		Assertions.assertThatThrownBy(() -> userService.login(request))
+		assertThatThrownBy(() -> userService.login(request))
 			.isInstanceOf(InvalidPasswordException.class);
 	}
 
@@ -162,10 +166,10 @@ class UserServiceTest {
 		// given
 		// when
 		userService.delete();
-		User deleted = userService.getUserById(1L);
 
 		// then
-		assertNotNull(deleted.getDeletedAt());
+		assertThatThrownBy(() -> userService.getUserById(1L))
+			.isInstanceOf(NoSuchUserException.class);
 	}
 
 	@Test
@@ -202,7 +206,7 @@ class UserServiceTest {
 
 		// when
 		// then
-		Assertions.assertThatThrownBy(() -> userService.me())
+		assertThatThrownBy(() -> userService.me())
 			.isInstanceOf(NotLoginException.class);
 	}
 
@@ -266,5 +270,54 @@ class UserServiceTest {
 		assertEquals(2L, registered.id());
 		User admin = userService.getUserById(2L);
 		assertEquals(ADMIN, admin.getRole());
+	}
+
+	@Test
+	@DisplayName("blockUser 는  User 를 탈퇴시킨다.")
+	void blockUser_Success() {
+		// given
+		String EMAIL = "user2@example.com";
+		UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+			.name(NAME)
+			.email(EMAIL)
+			.password(RAW_PASSWORD)
+			.build();
+		userService.adminRegister(userCreateRequest);
+
+		User admin = userService.getUserById(2L);
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+			new UsernamePasswordAuthenticationToken(admin, admin.getPassword(), admin.getAuthorities())
+		);
+
+		Long blockUserId = 1L;
+
+		// when
+		userService.blockUser(blockUserId);
+
+		// then
+		assertThatThrownBy(() -> userService.getUserById(blockUserId))
+			.isInstanceOf(NoSuchUserException.class);
+	}
+
+
+	@Test
+	@DisplayName("blockUser 는 Admin이 아닌 사용자의 요청의 경우 AuthorizationException 를 반환한다.")
+	void blockUser_throw_AuthorizationException() {
+		// given
+		String EMAIL = "user2@example.com";
+		UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+			.name(NAME)
+			.email(EMAIL)
+			.password(RAW_PASSWORD)
+			.build();
+		userService.register(userCreateRequest);
+
+		Long blockUserId = 2L;
+
+		// when
+		// then
+		assertThatThrownBy(() -> userService.blockUser(blockUserId))
+			.isInstanceOf(AuthorizationException.class);
 	}
 }

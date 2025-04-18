@@ -1,0 +1,63 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.11"
+    reportsDirectory = layout.buildDirectory.dir('jacoco')
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    dependsOn test
+    excludedClassFilesForReport(classDirectories)
+    executionData fileTree(dir: layout.buildDirectory, includes: ["jacoco/test.exec"])
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
+
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    excludedClassFilesForReport(classDirectories)
+    violationRules {
+        rule {
+            element = 'CLASS'
+
+            limit {
+                counter = 'METHOD'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+        }
+    }
+}
+
+private excludedClassFilesForReport(classDirectories) {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "**/request/**",
+                        "**/response/**",
+                        "**/presentation/**",
+                        "**/repository/**",
+                        "**/exception/**",
+                        "**/filter/**",
+                        "**/jwt/**",
+                        "**/config/**",
+                        "**/aop/**",
+                        "**/properties/**",
+                        "**/producer/**",
+                        "**/consumer/**",
+//                        "**/Q**",
+                        "**/ServerTechApplication.class",
+                ])
+            })
+    )
+}
