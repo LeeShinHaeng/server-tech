@@ -34,7 +34,6 @@ jobs:
         run: ./gradlew test
 
       - name: Upload coverage reports to Codecov
-        if: steps.jacoco.outcome == 'success'
         uses: codecov/codecov-action@v4
         continue-on-error: true
         with:
