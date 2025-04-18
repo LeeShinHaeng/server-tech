@@ -18,11 +18,11 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public Optional<User> findById(Long id) {
-		return jpaRepository.findById(id);
+		return jpaRepository.findByIdAndDeletedAtIsNull(id);
 	}
 
 	@Override
 	public Optional<User> findByEmail(String email) {
-		return jpaRepository.findByEmail(email);
+		return jpaRepository.findByEmailAndDeletedAtIsNull(email);
 	}
 }

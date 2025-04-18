@@ -53,6 +53,8 @@ private excludedClassFilesForReport(classDirectories) {
                         "**/config/**",
                         "**/aop/**",
                         "**/properties/**",
+                        "**/producer/**",
+                        "**/consumer/**",
 //                        "**/Q**",
                         "**/ServerTechApplication.class",
                 ])

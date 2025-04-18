@@ -28,11 +28,15 @@ public class FakeUserRepository implements UserRepository {
 
 	@Override
 	public Optional<User> findById(Long id) {
-		return data.stream().filter(user -> user.getId().equals(id)).findFirst();
+		return data.stream()
+			.filter(user -> user.getId().equals(id) && user.getDeletedAt() == null)
+			.findFirst();
 	}
 
 	@Override
 	public Optional<User> findByEmail(String email) {
-		return data.stream().filter(user -> user.getEmail().equals(email)).findFirst();
+		return data.stream()
+			.filter(user -> user.getEmail().equals(email) && user.getDeletedAt() == null)
+			.findFirst();
 	}
 }
