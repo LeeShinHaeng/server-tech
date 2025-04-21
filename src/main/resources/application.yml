@@ -17,3 +17,13 @@ spring:
 jwt:
   issuer: ${JWT_ISSUER}
   key: ${JWT_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
