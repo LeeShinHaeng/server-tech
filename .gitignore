@@ -36,4 +36,13 @@ out/
 ### VS Code ###
 .vscode/
 
+### mac ###
 *.DS_Store
+
+### .env (README.md)를 참고 ###
+.env
+
+### volume mount ###
+/db_data/*
+
+/grafana_data/*

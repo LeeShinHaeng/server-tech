@@ -54,9 +54,30 @@
   - REDIS_HOST=location_of_redis (localhost)
   - REDIS_PORT=port_number_of_redis_process (6379)
 
-### redis 추가
+### Redis 추가
 
 Redis Stream을 적용해서 Event를 다룹니다.
 
 service 계층의 비즈니스 로직에서 이벤트를 발생시켜 알림 객체를 생성하도록 만들었습니다. 
 
+## Docker로 실행하기
+
+### 1. .env 추가
+- .env 파일을 루트 폴더에 생성 후 위 환경변수를 참고해 변수를 넣습니다.
+- 이때 아래의 정보는 필수적으로 넣어줍니다.
+  ```
+    JWT_KEY=이 부분은 BASE64로 인코딩된 충분히 긴 문자열을 넣으시면 됩니다 
+    DB_HOST=postgres-db-server
+    REDIS_HOST=redis-cache-server
+  ```
+
+### 2. 실행
+- 아래의 명령어로 docker compose 파일을 실행합니다.
+- 이때 compose.yml 파일과 같은 위치에서 실행합니다.
+  
+  ```$ docker compose up -d --build```
+
+### 3. 종료
+- 아래의 명령어로 종료합니다.
+
+  ```$ docker compose down```
