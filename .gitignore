@@ -44,3 +44,5 @@ out/
 
 ### volume mount ###
 /db_data/*
+
+/grafana_data/*
