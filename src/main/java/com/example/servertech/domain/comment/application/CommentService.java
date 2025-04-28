@@ -122,9 +122,10 @@ public class CommentService {
 		String lockKey = LOCK_KEY_PREFIX + commentId;
 		RLock lock = redissonClient.getLock(lockKey);
 
+		boolean locked = false;
 		try {
-			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
-				throw new TryLockFailureException();
+			locked = lock.tryLock(1, 30, TimeUnit.SECONDS);
+			if (!locked) throw new TryLockFailureException();
 
 			Comment comment = getComment(commentId);
 			commentLikeRepository.save(
@@ -136,7 +137,7 @@ public class CommentService {
 		} catch (InterruptedException e) {
 			throw new LockInterruptedException();
 		} finally {
-			if (lock != null && lock.isLocked()) lock.unlock();
+			if (locked) lock.unlock();
 		}
 	}
 
@@ -145,15 +146,16 @@ public class CommentService {
 		String lockKey = LOCK_KEY_PREFIX + commentId;
 		RLock lock = redissonClient.getLock(lockKey);
 
+		boolean locked = false;
 		try {
-			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
-				throw new TryLockFailureException();
+			locked = lock.tryLock(1, 30, TimeUnit.SECONDS);
+			if (!locked) throw new TryLockFailureException();
 
 			commentLikeRepository.deleteByCommentAndUser(commentId, userService.me().getId());
 		} catch (InterruptedException e) {
 			throw new LockInterruptedException();
 		} finally {
-			if (lock != null && lock.isLocked()) lock.unlock();
+			if (locked) lock.unlock();
 		}
 	}
 }

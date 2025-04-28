@@ -102,9 +102,11 @@ public class PostService {
 	public void like(Long id) {
 		String lockKey = LOCK_KEY_PREFIX + id;
 		RLock lock = redissonClient.getLock(lockKey);
+		boolean locked = false;
+
 		try {
-			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
-				throw new TryLockFailureException();
+			locked = lock.tryLock(1, 30, TimeUnit.SECONDS);
+			if (!locked) throw new TryLockFailureException();
 
 			Post post = findPostById(id);
 			postLikeRepository.save(
@@ -116,7 +118,7 @@ public class PostService {
 		} catch (InterruptedException e) {
 			throw new LockInterruptedException();
 		} finally {
-			if (lock != null && lock.isLocked()) lock.unlock();
+			if (locked) lock.unlock();
 		}
 	}
 
@@ -124,14 +126,16 @@ public class PostService {
 	public void unlike(Long id) {
 		String lockKey = LOCK_KEY_PREFIX + id;
 		RLock lock = redissonClient.getLock(lockKey);
+		boolean locked = false;
 		try {
-			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
-				throw new TryLockFailureException();
+			locked = lock.tryLock(1, 30, TimeUnit.SECONDS);
+			if (!locked) throw new TryLockFailureException();
+
 			postLikeRepository.deleteByPostAndUser(id, userService.me().getId());
 		} catch (InterruptedException e) {
 			throw new LockInterruptedException();
 		} finally {
-			if (lock != null && lock.isLocked()) lock.unlock();
+			if (locked) lock.unlock();
 		}
 	}
 }
