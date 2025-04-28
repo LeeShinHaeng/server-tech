@@ -25,4 +25,9 @@ public class CommentLikeRepositoryImpl implements CommentLikeRepository {
 	public List<CommentLike> findAllByCommentIdInAndLikerId(List<Long> commentIds, Long likerId) {
 		return jpaRepository.findAllByCommentIdInAndLikerId(commentIds, likerId);
 	}
+
+	@Override
+	public Integer countByCommentId(Long commentId) {
+		return jpaRepository.countByCommentId(commentId);
+	}
 }

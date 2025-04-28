@@ -25,4 +25,9 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
 	public Optional<PostLike> findByPostAndUser(Long postId, Long userId) {
 		return jpaRepository.findByPostIdAndLikerId(postId, userId);
 	}
+
+	@Override
+	public Integer countByPostId(Long postId) {
+		return jpaRepository.countByPostId(postId);
+	}
 }

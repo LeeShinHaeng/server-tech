@@ -29,6 +29,11 @@ import com.example.servertech.mock.repository.FakeUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +42,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
@@ -45,7 +51,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
 	private CommentService commentService;
 
@@ -56,6 +67,11 @@ class CommentServiceTest {
 	private CommentRepository commentRepository;
 	private CommentLikeRepository commentLikeRepository;
 	private UserRepository userRepository;
+
+	@Mock
+	private RedissonClient redissonClient;
+	@Mock
+	private RLock mockLock;
 
 	@BeforeEach
 	void init() {
@@ -72,10 +88,11 @@ class CommentServiceTest {
 		JwtProvider jwtProvider = new JwtProvider(jwtProperties);
 		AuthService authService = new AuthService(jwtProvider);
 		UserService userService = new UserService(authService, userRepository, encoder);
-		PostService postService = new PostService(userService, postRepository, postLikeRepository, eventProducer);
+		PostService postService = new PostService(userService, postRepository, postLikeRepository,
+			eventProducer, redissonClient);
 
 		commentService = new CommentService(userService, postService, commentRepository,
-			commentLikeRepository, eventProducer);
+			commentLikeRepository, eventProducer, redissonClient);
 
 		user = userRepository.save(
 			User.builder()
@@ -135,6 +152,8 @@ class CommentServiceTest {
 	@Test
 	@DisplayName("findAllByPostId 는 like 한 댓글의 like 는 true를 반환한다.")
 	void findAllByPostId_Like() {
+		// given
+		stubbingMock();
 		// when
 		commentService.like(1L);
 		CommentListResponse response = commentService.findAllByPostId(post.getId());
@@ -231,6 +250,7 @@ class CommentServiceTest {
 	@DisplayName("like 는 CommentLike 객체를 생성한다.")
 	void like() {
 		// given
+		stubbingMock();
 		List<Long> commentIdList = new ArrayList<>();
 		commentIdList.add(1L);
 
@@ -250,6 +270,7 @@ class CommentServiceTest {
 	@DisplayName("unlike 는 CommentLike 객체를 삭제한다.")
 	void unlike() {
 		// given
+		stubbingMock();
 		List<Long> commentIdList = new ArrayList<>();
 		commentIdList.add(1L);
 
@@ -306,5 +327,57 @@ class CommentServiceTest {
 		// then
 		assertThatThrownBy(() -> commentService.checkAuth(comment))
 			.isInstanceOf(WriterNotMatchException.class);
+	}
+
+	@Test
+	@DisplayName("동시에 100개의 요청을 멀티 쓰레드로 보내도 정확히 100개의 좋아요가 생성된다.")
+	void commentLike_Lock() throws InterruptedException {
+		stubbingMock();
+
+		int threadCount = 100;
+		Thread[] threads = new Thread[threadCount];
+		Long commentId = comment.getId();
+
+		for (int i = 0; i < threadCount; i++) {
+			int finalI = i;
+			threads[i] = new Thread(() -> {
+				try {
+					User user = userRepository.save(
+						User.builder()
+							.id((long) (finalI + 2))
+							.name("user" + finalI)
+							.email("email" + finalI + "@email.com")
+							.password("password")
+							.role(NORMAL)
+							.build()
+					);
+
+					SecurityContext context = SecurityContextHolder.getContext();
+					context.setAuthentication(
+						new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+					);
+
+					commentService.like(commentId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			threads[i].start();
+		}
+
+		for (Thread t : threads) {
+			t.join();
+		}
+
+		assertEquals(threadCount, commentLikeRepository.countByCommentId(commentId));
+	}
+
+	private void stubbingMock(){
+		when(redissonClient.getLock(anyString())).thenReturn(mockLock);
+		try {
+			when(mockLock.tryLock(anyLong(), anyLong(), any(TimeUnit.class))).thenReturn(true);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

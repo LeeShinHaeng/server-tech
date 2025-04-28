@@ -24,12 +24,18 @@ import com.example.servertech.mock.repository.FakeUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.servertech.domain.user.entity.UserRole.ADMIN;
 import static com.example.servertech.domain.user.entity.UserRole.NORMAL;
@@ -38,7 +44,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class PostServiceTest {
 	private PostService postService;
 	private UserRepository userRepository;
@@ -48,6 +59,11 @@ class PostServiceTest {
 	private final String TITLE = "테스트 제목";
 	private final String CONTENT = "테스트 내용";
 	private Post post;
+
+	@Mock
+	private RedissonClient redissonClient;
+	@Mock
+	private RLock mockLock;
 
 	@BeforeEach
 	void init() {
@@ -66,8 +82,7 @@ class PostServiceTest {
 		AuthService authService = new AuthService(jwtProvider);
 
 		UserService userService = new UserService(authService, userRepository, encoder);
-
-		postService = new PostService(userService, postRepository, postLikeRepository, eventProducer);
+		postService = new PostService(userService, postRepository, postLikeRepository, eventProducer, redissonClient);
 
 		User user = userRepository.save(
 			User.builder()
@@ -140,6 +155,9 @@ class PostServiceTest {
 	@Test
 	@DisplayName("findById 은 좋아요를 누른 Post Response 의 like 는 true 로 반환한다.")
 	void findById_Like() {
+		// given
+		stubbingMock();
+
 		// when
 		postService.like(1L);
 		PostDetailResponse response = postService.findById(1L);
@@ -231,6 +249,8 @@ class PostServiceTest {
 	@DisplayName("like 은 PostLike 객체를 생성한다.")
 	void like_Success() {
 		// given
+		stubbingMock();
+
 		// when
 		postService.like(1L);
 		Optional<PostLike> postLike = postLikeRepository.findByPostAndUser(1L, 1L);
@@ -244,6 +264,8 @@ class PostServiceTest {
 	@DisplayName("unlike 은 PostLike 객체를 삭제한다.")
 	void unlike_Success() {
 		// given
+		stubbingMock();
+
 		// when
 		postService.like(1L);
 		postService.unlike(1L);
@@ -276,7 +298,6 @@ class PostServiceTest {
 		assertThatNoException().isThrownBy(() -> postService.checkAuth(post));
 	}
 
-
 	@Test
 	@DisplayName("checkAuth 은 post 에 접근 권한이 없는 회원의 경우 WriterNotMatchException 를 반환한다.")
 	void checkAuth_throw_WriterNotMatchException() {
@@ -295,5 +316,57 @@ class PostServiceTest {
 		// then
 		assertThatThrownBy(() -> postService.checkAuth(post))
 			.isInstanceOf(WriterNotMatchException.class);
+	}
+
+	@Test
+	@DisplayName("동시에 100개의 요청을 멀티 쓰레드로 보내도 정확히 100개의 좋아요가 생성된다.")
+	void postLike_Lock() throws InterruptedException {
+		stubbingMock();
+
+		int threadCount = 100;
+		Thread[] threads = new Thread[threadCount];
+		Long postId = post.getId();
+
+		for (int i = 0; i < threadCount; i++) {
+			int finalI = i;
+			threads[i] = new Thread(() -> {
+				try {
+					User user = userRepository.save(
+						User.builder()
+							.id((long) (finalI + 2))
+							.name("user" + finalI)
+							.email("email" + finalI + "@email.com")
+							.password("password")
+							.role(NORMAL)
+							.build()
+					);
+
+					SecurityContext context = SecurityContextHolder.getContext();
+					context.setAuthentication(
+						new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+					);
+
+					postService.like(postId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			threads[i].start();
+		}
+
+		for (Thread t : threads) {
+			t.join();
+		}
+
+		assertEquals(threadCount, postLikeRepository.countByPostId(postId));
+	}
+
+	private void stubbingMock(){
+		when(redissonClient.getLock(anyString())).thenReturn(mockLock);
+		try {
+			when(mockLock.tryLock(anyLong(), anyLong(), any(TimeUnit.class))).thenReturn(true);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
