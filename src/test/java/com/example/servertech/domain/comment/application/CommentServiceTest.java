@@ -29,6 +29,8 @@ import com.example.servertech.mock.repository.FakeUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.redisson.api.RedissonClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -72,7 +74,9 @@ class CommentServiceTest {
 		JwtProvider jwtProvider = new JwtProvider(jwtProperties);
 		AuthService authService = new AuthService(jwtProvider);
 		UserService userService = new UserService(authService, userRepository, encoder);
-		PostService postService = new PostService(userService, postRepository, postLikeRepository, eventProducer);
+		RedissonClient redissonClient = Mockito.mock(RedissonClient.class);
+		PostService postService = new PostService(userService, postRepository, postLikeRepository,
+			eventProducer, redissonClient);
 
 		commentService = new CommentService(userService, postService, commentRepository,
 			commentLikeRepository, eventProducer);
