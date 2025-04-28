@@ -3,8 +3,6 @@ package com.example.servertech.mock.repository;
 import com.example.servertech.domain.notification.entity.Notification;
 import com.example.servertech.domain.notification.repository.NotificationRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
