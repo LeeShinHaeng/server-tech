@@ -122,6 +122,16 @@ public class PostService {
 
 	@Transactional
 	public void unlike(Long id) {
-		postLikeRepository.deleteByPostAndUser(id, userService.me().getId());
+		String lockKey = LOCK_KEY_PREFIX + id;
+		RLock lock = redissonClient.getLock(lockKey);
+		try {
+			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
+				throw new TryLockFailureException();
+			postLikeRepository.deleteByPostAndUser(id, userService.me().getId());
+		} catch (InterruptedException e) {
+			throw new LockInterruptedException();
+		} finally {
+			if (lock != null && lock.isLocked()) lock.unlock();
+		}
 	}
 }

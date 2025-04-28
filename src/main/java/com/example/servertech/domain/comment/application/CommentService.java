@@ -142,6 +142,18 @@ public class CommentService {
 
 	@Transactional
 	public void unlike(Long commentId) {
-		commentLikeRepository.deleteByCommentAndUser(commentId, userService.me().getId());
+		String lockKey = LOCK_KEY_PREFIX + commentId;
+		RLock lock = redissonClient.getLock(lockKey);
+
+		try {
+			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
+				throw new TryLockFailureException();
+
+			commentLikeRepository.deleteByCommentAndUser(commentId, userService.me().getId());
+		} catch (InterruptedException e) {
+			throw new LockInterruptedException();
+		} finally {
+			if (lock != null && lock.isLocked()) lock.unlock();
+		}
 	}
 }
