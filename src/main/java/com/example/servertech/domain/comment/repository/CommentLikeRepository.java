@@ -10,4 +10,6 @@ public interface CommentLikeRepository {
 	void deleteByCommentAndUser(Long commentId, Long userId);
 
 	List<CommentLike> findAllByCommentIdInAndLikerId(List<Long> commentIds, Long likerId);
+
+	Integer countByCommentId(Long commentId);
 }

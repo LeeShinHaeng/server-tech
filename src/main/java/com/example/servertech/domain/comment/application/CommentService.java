@@ -11,11 +11,15 @@ import com.example.servertech.domain.comment.presentation.response.CommentListRe
 import com.example.servertech.domain.comment.presentation.response.CommentPersistResponse;
 import com.example.servertech.domain.comment.repository.CommentLikeRepository;
 import com.example.servertech.domain.comment.repository.CommentRepository;
+import com.example.servertech.domain.common.entity.exception.LockInterruptedException;
+import com.example.servertech.domain.common.entity.exception.TryLockFailureException;
 import com.example.servertech.domain.post.application.PostService;
 import com.example.servertech.domain.post.entity.Post;
 import com.example.servertech.domain.user.application.UserService;
 import com.example.servertech.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.example.servertech.common.event.domain.EventType.COMMENT_LIKE;
@@ -37,6 +42,9 @@ public class CommentService {
 	private final CommentRepository commentRepository;
 	private final CommentLikeRepository commentLikeRepository;
 	private final EventProducer eventProducer;
+	private final RedissonClient redissonClient;
+
+	private static final String LOCK_KEY_PREFIX = "lock:commentlike:";
 
 	@Transactional
 	public CommentPersistResponse create(Long postId, CommentCreateRequest request) {
@@ -111,13 +119,25 @@ public class CommentService {
 
 	@Transactional
 	public void like(Long commentId) {
-		Comment comment = getComment(commentId);
-		commentLikeRepository.save(
-			CommentLike.create(comment, userService.me())
-		);
-		eventProducer.publish(
-			CommonEvent.create(comment.getWriter().getId(), COMMENT_LIKE)
-		);
+		String lockKey = LOCK_KEY_PREFIX + commentId;
+		RLock lock = redissonClient.getLock(lockKey);
+
+		try {
+			if (!lock.tryLock(1, 2, TimeUnit.SECONDS))
+				throw new TryLockFailureException();
+
+			Comment comment = getComment(commentId);
+			commentLikeRepository.save(
+				CommentLike.create(comment, userService.me())
+			);
+			eventProducer.publish(
+				CommonEvent.create(comment.getWriter().getId(), COMMENT_LIKE)
+			);
+		} catch (InterruptedException e) {
+			throw new LockInterruptedException();
+		} finally {
+			if (lock != null && lock.isLocked()) lock.unlock();
+		}
 	}
 
 	@Transactional

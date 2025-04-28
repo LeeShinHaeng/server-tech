@@ -298,7 +298,6 @@ class PostServiceTest {
 		assertThatNoException().isThrownBy(() -> postService.checkAuth(post));
 	}
 
-
 	@Test
 	@DisplayName("checkAuth 은 post 에 접근 권한이 없는 회원의 경우 WriterNotMatchException 를 반환한다.")
 	void checkAuth_throw_WriterNotMatchException() {
@@ -320,7 +319,7 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("동시에 100개의 요청을 보내도 100개의 좋아요가 생성된다.")
+	@DisplayName("동시에 100개의 요청을 멀티 쓰레드로 보내도 정확히 100개의 좋아요가 생성된다.")
 	void postLike_Lock() throws InterruptedException {
 		stubbingMock();
 
