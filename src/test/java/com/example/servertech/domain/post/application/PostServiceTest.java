@@ -296,4 +296,41 @@ class PostServiceTest {
 		assertThatThrownBy(() -> postService.checkAuth(post))
 			.isInstanceOf(WriterNotMatchException.class);
 	}
+
+	@Test
+	@DisplayName("동시에 100개의 요청을 보내도 100개의 좋아요가 생성된다.")
+	void postLike_Lock() {
+		int threadCount = 100;
+		Thread[] threads = new Thread[threadCount];
+		Long postId = post.getId();
+
+		for (int i = 0; i < threadCount; i++) {
+			int finalI = i;
+			threads[i] = new Thread(() -> {
+				try {
+					User user = userRepository.save(
+						User.builder()
+							.id(1L)
+							.name("user" + finalI)
+							.email("email" + finalI + "@email.com")
+							.password("password")
+							.role(NORMAL)
+							.build()
+					);
+
+					SecurityContext context = SecurityContextHolder.getContext();
+					context.setAuthentication(
+						new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities())
+					);
+
+					postService.like(postId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			threads[i].start();
+		}
+
+		assertEquals(threadCount, postLikeRepository.countByPostId(postId));
+	}
 }

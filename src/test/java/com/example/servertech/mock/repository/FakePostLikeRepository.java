@@ -41,4 +41,13 @@ public class FakePostLikeRepository implements PostLikeRepository {
 			)
 			.findFirst();
 	}
+
+	@Override
+	public Integer countByPostId(Long postId) {
+		return Math.toIntExact(
+			data.stream()
+				.filter((postLike -> postLike.getPost().getId().equals(postId)))
+				.count()
+		);
+	}
 }
